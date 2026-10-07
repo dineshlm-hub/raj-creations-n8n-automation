@@ -1,0 +1,422 @@
+{
+  "id": "PKxND05rPhoANXxD",
+  "name": "Raj Creations - Template Guardian",
+  "active": true,
+  "isArchived": false,
+  "versionId": "7f529367-13c9-4807-af59-6c320ebb9acc",
+  "activeVersionId": "7f529367-13c9-4807-af59-6c320ebb9acc",
+  "triggerCount": 1,
+  "nodeCount": 9,
+  "createdAt": "2026-10-03T11:43:16.374Z",
+  "updatedAt": "2026-10-07T06:10:06.122Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Every 2 hours: checks the bot's WhatsApp templates at Meta; recreates missing/disabled ones under a new name and stores the name the bot should use in the \"WhatsApp Templates\" data table. Approved by the user on 3 Oct 2026.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "List Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Templates": {
+      "main": [
+        [
+          {
+            "node": "Saved Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saved Names": {
+      "main": [
+        [
+          {
+            "node": "Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan": {
+      "main": [
+        [
+          {
+            "node": "Needs New Copy?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs New Copy?": {
+      "main": [
+        [
+          {
+            "node": "Create Template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Name To Use",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Template": {
+      "main": [
+        [
+          {
+            "node": "Record Create Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Create Result": {
+      "main": [
+        [
+          {
+            "node": "Save Name To Use",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Now": {
+      "main": [
+        [
+          {
+            "node": "List Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "2299d3af-9f00-414e-8135-194b9dc4bf62",
+      "name": "Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "458c82f8-2473-4527-993b-403642be08a4",
+      "name": "List Templates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://graph.facebook.com/v24.0/1093569023049054/message_templates?fields=id,name,status,category,language,rejected_reason&limit=250",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "4cff6b96-1459-4048-9dc4-67c300a0c012",
+      "name": "Saved Names",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "fffffcda-713d-40c4-81ed-23a3bc0932a0",
+      "name": "Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Checks that the bot's WhatsApp templates exist and are usable, and plans what to do for each one.\n// A template that is missing (deleted), disabled or paused is recreated under a new name, because Meta\n// blocks reusing a deleted template's name for a while. The bot reads the name to use from the\n// \"WhatsApp Templates\" data table.\nconst WABA_LIST = $('List Templates').first().json;\nconst listed = Array.isArray(WABA_LIST.data) ? WABA_LIST.data : [];\nconst listError = WABA_LIST.error ? String(WABA_LIST.error.message || JSON.stringify(WABA_LIST.error)) : '';\nconst saved = {};\nfor (const it of $input.all()) if (it.json && it.json.key) saved[it.json.key] = it.json;\nconst now = $now.setZone('Asia/Kolkata');\nconst stamp = now.toFormat('yyyy-MM-dd HH:mm');\n\nconst SHEET = 'https://docs.google.com/spreadsheets/d/1W4jmnP3XUVXk7EimIOOjTx4GcfaqHiUAXnaM1bsGiHE/edit';\nconst REQUIRED = [\n  {\n    key: 'lead',\n    base: 'rc_lead_alert',\n    components: [\n      {\n        type: 'BODY',\n        text: 'New alert from the Raj Creations WhatsApp assistant.\\n\\nReason: {{1}}\\nCustomer: {{2}}\\nDetails: {{3}}\\n\\nPlease reply to this customer from your phone soon. This message was sent automatically by our order assistant.',\n        example: { body_text: [['New WEBSITE ORDER of Rs 13,671 including GST', 'Priya, +91 98000 00000', 'Business / City: Sharma Fancy Store, Pune | Type: Retailer | Language: Hindi | Items: 322 x35 box']] },\n      },\n      {\n        type: 'BUTTONS',\n        buttons: [\n          { type: 'URL', text: 'Chat with customer', url: 'https://rajcreation.info/chat/?n={{1}}', example: ['https://rajcreation.info/chat/?n=919800000000'] },\n          { type: 'URL', text: 'Open leads sheet', url: SHEET },\n        ],\n      },\n    ],\n  },\n  {\n    // Mahek's alerts outside her 24-hour window (inside it the bot sends a normal message with buttons)\n    key: 'alert',\n    base: 'rc_mahek_alert',\n    components: [\n      {\n        type: 'BODY',\n        text: 'New update from the Raj Creations order assistant: {{1}}\\n\\nCustomer: {{2}}\\nBusiness: {{3}}\\nDetails: {{4}}\\n\\nTap a button below to chat with the customer, check their status or finalize the order.',\n        example: { body_text: [['New WEBSITE ORDER RC-1007-K3F9 - Rs 11,710.13 incl. GST (41 packets)', 'Raj Gada, +91 97686 63737', 'Meeraj, Mumbai | Retailer | English', '8 items, 41 packets: TESLA-703 x1, TESLA-707 x4, CH-01 x6']] },\n      },\n      {\n        type: 'BUTTONS',\n        buttons: [\n          { type: 'QUICK_REPLY', text: 'Finalize order' },\n          { type: 'QUICK_REPLY', text: 'Status' },\n          { type: 'QUICK_REPLY', text: 'Pause bot' },\n          { type: 'URL', text: 'Chat with customer', url: 'https://rajcreation.info/chat/?n={{1}}', example: ['https://rajcreation.info/chat/?n=919800000000'] },\n          { type: 'URL', text: 'Open leads sheet', url: SHEET },\n        ],\n      },\n    ],\n  },\n  {\n    // order confirmation for a customer whose 24-hour window is closed: the button sends them the PDF\n    key: 'confirm',\n    base: 'rc_order_confirmed',\n    components: [\n      {\n        type: 'BODY',\n        text: 'Hello {{1}}, your Raj Creations order {{2}} is confirmed.\\n\\nTotal: {{3}}\\n\\nTap the button below to get your order confirmation PDF. If you have any questions, just reply to this message.',\n        example: { body_text: [['Priya', 'RC-1007-K3F9', 'Rs 12,060.13 (incl. GST and shipping)']] },\n      },\n      { type: 'BUTTONS', buttons: [{ type: 'QUICK_REPLY', text: 'Get confirmation PDF' }] },\n    ],\n  },\n  {\n    key: 'problem',\n    base: 'rc_bot_problem',\n    components: [\n      {\n        type: 'BODY',\n        text: 'The Raj Creations WhatsApp assistant had a problem.\\n\\nStep: {{1}}\\nError: {{2}}\\nTime: {{3}}\\n\\nA customer may not have received a reply. Please check recent chats and the n8n executions list.',\n        example: { body_text: [['Send Welcome Message', 'Request timed out', '03 Oct 2026, 12:00 PM']] },\n      },\n      {\n        type: 'BUTTONS',\n        buttons: [{ type: 'URL', text: 'Open n8n', url: 'https://gadaironman.app.n8n.cloud/workflow/OZLCCBDrLeivkkMf/executions' }],\n      },\n    ],\n  },\n];\n\nconst RANK = { APPROVED: 3, PENDING: 2, IN_APPEAL: 2, REJECTED: 1 };\nconst out = [];\nfor (const req of REQUIRED) {\n  const prev = saved[req.key] || {};\n  const mine = listed.filter((t) => (t.name === req.base || String(t.name).startsWith(req.base + '_')) && t.language === 'en_US');\n  // best usable copy: approved first, the one already in use preferred, then the newest name\n  mine.sort((a, b) => (RANK[b.status] || 0) - (RANK[a.status] || 0) || (b.name === prev.name) - (a.name === prev.name) || String(b.name).localeCompare(String(a.name)));\n  const best = mine[0];\n  const seen = mine.map((t) => t.name + '=' + t.status).join(', ') || 'none';\n  let action = 'ok';\n  let name = best ? best.name : (prev.name || req.base);\n  let status = best ? best.status : 'MISSING';\n  let note = '';\n  if (listError) {\n    action = 'skip';\n    status = prev.status || 'UNKNOWN';\n    note = 'Could not read templates from Meta: ' + listError.slice(0, 300);\n  } else if (!best || ['DISABLED', 'PAUSED', 'DELETED', 'PENDING_DELETION', 'ARCHIVED'].includes(best.status)) {\n    // at most one new copy a day: if copies keep vanishing, something is deleting them and resubmitting won't help\n    const lastMade = String(prev.history || '').split('\\n').find((l) => l.includes('| creating '));\n    const madeAt = lastMade ? DateTime.fromFormat(lastMade.slice(0, 16), 'yyyy-MM-dd HH:mm', { zone: 'Asia/Kolkata' }) : null;\n    const hoursAgo = madeAt && madeAt.isValid ? now.diff(madeAt, 'hours').hours : Infinity;\n    let runNow = false; // a manual \"Run Now\" always makes a new copy\n    try { runNow = $('Run Now').isExecuted; } catch (e) { runNow = false; }\n    if (hoursAgo < 24 && !runNow) {\n      action = 'wait';\n      note = 'The copy made ' + Math.round(hoursAgo) + ' h ago was deleted again – something with access to the WhatsApp account (AiSensy / automessage?) is deleting templates. Next new copy after 24 h.';\n    } else {\n      action = 'create';\n      note = best ? best.name + ' is ' + best.status + ' – created a new copy' : 'No ' + req.base + ' template found at Meta (deleted?) – created a new copy';\n    }\n  } else if (best.status === 'REJECTED') {\n    note = best.name + ' was REJECTED by Meta' + (best.rejected_reason && best.rejected_reason !== 'NONE' ? ' (' + best.rejected_reason + ')' : '') + ' – not recreated automatically, please check the wording';\n  } else if (best.status !== 'APPROVED') {\n    note = best.name + ' is ' + best.status + ' (waiting for Meta)';\n  } else {\n    note = best.name + ' approved';\n  }\n  const newName = req.base + '_' + now.toFormat('ddLLyyHHmm');\n  const changed = action === 'create' || status !== prev.status || name !== prev.name;\n  const history = String((changed ? stamp + ' | ' + status + ' ' + name + ' | seen: ' + seen + (action === 'create' ? ' | creating ' + newName : '') + '\\n' : '') + (prev.history || '')).slice(0, 3000);\n  out.push({\n    json: {\n      key: req.key,\n      name,\n      status,\n      checked_at: stamp,\n      note,\n      history,\n      need_create: action === 'create',\n      new_name: newName,\n      create_body: { name: newName, language: 'en_US', category: 'UTILITY', components: req.components },\n    },\n  });\n}\nreturn out;\n"
+      }
+    },
+    {
+      "id": "76b387cb-e56c-4f0b-9c8b-590d3d58eb6f",
+      "name": "Needs New Copy?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.need_create }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "ca194a5c-7f65-4bca-a3df-0228f487ffc8",
+      "name": "Create Template",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/1093569023049054/message_templates",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.create_body) }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "386bec30-6f99-4659-9595-9c722e9c9c7a",
+      "name": "Record Create Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Result of creating a new template copy: use it if Meta accepted it, otherwise keep the old name and say why.\nconst plan = $('Plan').item.json;\nconst r = $json;\nconst err = r.error ? String(r.error.message || r.error.description || JSON.stringify(r.error)).slice(0, 300) : '';\nif (r.id && !err) {\n  return { json: Object.assign({}, plan, {\n    name: plan.new_name,\n    status: r.status || 'PENDING',\n    note: plan.note + ' → ' + plan.new_name + ' submitted (' + (r.status || 'PENDING') + ', ' + (r.category || 'UTILITY') + ')',\n  }) };\n}\nreturn { json: Object.assign({}, plan, {\n  note: plan.note + ' → creating ' + plan.new_name + ' FAILED: ' + (err || JSON.stringify(r).slice(0, 300)),\n  history: (plan.checked_at + ' | create failed: ' + (err || 'unknown') + '\\n' + plan.history).slice(0, 3000),\n}) };\n"
+      }
+    },
+    {
+      "id": "9ea69004-85e2-45b6-b56d-8de62e5d4b75",
+      "name": "Save Name To Use",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1680,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "={{ $json.key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key": "={{ $json.key }}",
+            "name": "={{ $json.name }}",
+            "status": "={{ $json.status }}",
+            "checked_at": "={{ $json.checked_at }}",
+            "note": "={{ $json.note }}",
+            "history": "={{ $json.history }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "key",
+              "displayName": "key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "checked_at",
+              "displayName": "checked_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "note",
+              "displayName": "note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "history",
+              "displayName": "history",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "26e94be6-a70c-4ac4-b146-82edc16bf80f",
+      "name": "Run Now",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        400
+      ],
+      "parameters": {}
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": {
+    "sameAsDraft": true
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

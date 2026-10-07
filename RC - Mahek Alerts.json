@@ -1,0 +1,661 @@
+{
+  "id": "AoirjxwPkEhnxQZv",
+  "name": "RC - Mahek Alerts",
+  "active": true,
+  "isArchived": false,
+  "versionId": "e26d28c7-0723-4d76-9261-ca4eefda6f20",
+  "activeVersionId": "e26d28c7-0723-4d76-9261-ca4eefda6f20",
+  "triggerCount": 0,
+  "nodeCount": 13,
+  "createdAt": "2026-10-07T06:05:39.489Z",
+  "updatedAt": "2026-10-07T06:05:57.272Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Sends the bot's alerts to Mahek: a normal WhatsApp message with buttons while her 24-hour window is open, else the approved rc_mahek_alert template. Resends a fallback when WhatsApp reports a message as failed.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Alert In": {
+      "main": [
+        [
+          {
+            "node": "Mahek State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mahek State": {
+      "main": [
+        [
+          {
+            "node": "Template Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Names": {
+      "main": [
+        [
+          {
+            "node": "Logged Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logged Message": {
+      "main": [
+        [
+          {
+            "node": "Plan",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Failure Report?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan": {
+      "main": [
+        [
+          {
+            "node": "Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send": {
+      "main": [
+        [
+          {
+            "node": "Check Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Results": {
+      "main": [
+        [
+          {
+            "node": "Try Fallback?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Try Fallback?": {
+      "main": [
+        [
+          {
+            "node": "Send Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Remember Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Fallback": {
+      "main": [
+        [
+          {
+            "node": "Check Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Fallback": {
+      "main": [
+        [
+          {
+            "node": "Remember Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Failure Report?": {
+      "main": [
+        [
+          {
+            "node": "Mark Retried",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "550e7eb8-dee2-4a90-a65b-7e3ddcddceb2",
+      "name": "Alert In",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "mode",
+              "type": "string"
+            },
+            {
+              "name": "alert",
+              "type": "object"
+            },
+            {
+              "name": "status",
+              "type": "object"
+            },
+            {
+              "name": "phone_number_id",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "141b87a9-54d7-4dfc-9058-128620282df0",
+      "name": "Mahek State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "AsCRiboQ92mUumOU",
+          "cachedResultName": "RC Bot State"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "admin"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "7fc035c9-d980-4588-8a98-de63fa6bba2a",
+      "name": "Template Names",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "eb2d7e0b-51d0-46aa-ad80-b43c6f437043",
+      "name": "Logged Message",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "qwfr6eTv7yNUTMTU",
+          "cachedResultName": "RC Alert Log"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "wamid",
+              "condition": "eq",
+              "keyValue": "={{ ($('Alert In').first().json.status || {}).id || '-' }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "39fc6473-a4bc-408e-a95a-c8dc4b683b2a",
+      "name": "Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// How to reach Mahek: while her 24-hour WhatsApp window is open (she messaged or tapped a button in the last\n// 23.5 h) a normal message is free, instant and can carry buttons. Otherwise only an approved template gets through.\n// Every message carries a fallback: if WhatsApp rejects it now, or reports it \"failed\" later (see mode \"failed\"),\n// the fallback goes out instead.\nconst MAHEK = '919112296139';\nconst inp = $('Alert In').first().json;\nconst mode = inp.mode || 'send';\nconst tpl = {};\nfor (const it of $('Template Names').all()) if (it.json && it.json.key) tpl[it.json.key] = it.json;\nconst approved = (k) => (tpl[k] && tpl[k].status === 'APPROVED' && tpl[k].name ? tpl[k].name : '');\n\nif (mode === 'failed') {\n  // a message we sent earlier was reported as failed: send its fallback once\n  const row = $('Logged Message').first().json || {};\n  if (!row.wamid || row.retried) return [];\n  let fb = [];\n  try { fb = JSON.parse(row.fallback || '[]'); } catch (e) { fb = []; }\n  const why = (((inp.status || {}).errors || [])[0] || {});\n  return fb.map((p) => ({ json: { to: p.to, payload: p, log: true, kind: p.type === 'template' ? 'template' : 'free', phone: row.phone || '', order_id: row.order_id || '', fallback: [], retry_of: row.wamid, reason: (why.code || '') + ' ' + (why.title || '') } }));\n}\n\nlet st = {};\ntry { st = JSON.parse($('Mahek State').first().json.value || '{}') || {}; } catch (e) { st = {}; }\nconst a = inp.alert || {};\nconst phone = String(a.phone || '');\nconst name = a.name || 'Customer';\nconst windowOpen = Date.now() - (Number(st.last_in_ms) || 0) < 23.5 * 3600 * 1000;\nconst details = { messaging_product: 'whatsapp', recipient_type: 'individual', to: MAHEK, type: 'interactive', interactive: {\n  type: 'cta_url', header: { type: 'text', text: String(a.header || 'New alert').slice(0, 60) }, body: { text: String(a.body || '').slice(0, 1024) },\n  footer: { text: 'Raj Creations order assistant' }, action: { name: 'cta_url', parameters: { display_text: 'Chat with customer', url: 'https://rajcreation.info/chat/?n=' + phone } } } };\nconst btn = (id, title) => ({ type: 'reply', reply: { id, title } });\nconst bts = [];\nif (a.order_id) bts.push(btn('a:fin:' + a.order_id, '✅ Finalize order'));\nbts.push(a.paused ? btn('a:re:' + phone, '▶️ Resume bot') : btn('a:pa:' + phone, '⏸️ Pause bot'));\nbts.push(btn('a:st:' + phone, '📋 Status'));\nif (bts.length < 3) bts.push(btn('a:sheet', '📊 Leads sheet'));\nconst actions = { messaging_product: 'whatsapp', recipient_type: 'individual', to: MAHEK, type: 'interactive', interactive: {\n  type: 'button', body: { text: 'What next for *' + name + '*' + (a.order_id ? ' (order ' + a.order_id + ')' : '') + '?' + (a.paused ? '\\n⏸️ The bot is quiet for them while you handle it.' : '') }, action: { buttons: bts } } };\nconst tname = approved('alert');\nconst params = (a.tpl || []).slice(0, 4).map((t) => ({ type: 'text', text: String(t || '-').replace(/\\s+/g, ' ').slice(0, 900) || '-' }));\nwhile (params.length < 4) params.push({ type: 'text', text: '-' });\nconst template = tname ? { messaging_product: 'whatsapp', to: MAHEK, type: 'template', template: { name: tname, language: { code: 'en_US' }, components: [\n  { type: 'body', parameters: params },\n  { type: 'button', sub_type: 'quick_reply', index: '0', parameters: [{ type: 'payload', payload: a.order_id ? 'a:fin:' + a.order_id : 'a:finp:' + phone }] },\n  { type: 'button', sub_type: 'quick_reply', index: '1', parameters: [{ type: 'payload', payload: 'a:st:' + phone }] },\n  { type: 'button', sub_type: 'quick_reply', index: '2', parameters: [{ type: 'payload', payload: 'a:pa:' + phone }] },\n  { type: 'button', sub_type: 'url', index: '3', parameters: [{ type: 'text', text: phone }] },\n] } } : null;\nconst one = { to: MAHEK, phone, order_id: a.order_id || '', log: true, retry_of: '' };\nif (windowOpen || !template) {\n  return [\n    { json: Object.assign({}, one, { kind: 'free', payload: details, fallback: template ? [template] : [] }) },\n    { json: Object.assign({}, one, { kind: 'free', payload: actions, fallback: [] }) },\n  ];\n}\nreturn [{ json: Object.assign({}, one, { kind: 'template', payload: template, fallback: [details, actions] }) }];\n"
+      }
+    },
+    {
+      "id": "a43a4cae-5e46-4e49-a270-16a51f3ca047",
+      "name": "Send",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v24.0/{{ $('Alert In').first().json.phone_number_id || '1342683025589974' }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "3d7e9645-6169-4e1e-a817-3ee1a252850a",
+      "name": "Check Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Sent: remember it. Refused straight away (e.g. template not approved, or outside the 24 h window): send the fallback.\nconst out = [];\n$input.all().forEach((it, i) => {\n  const src = $('Plan').itemMatching(i).json;\n  const id = ((it.json.messages || [])[0] || {}).id;\n  if (id) out.push({ json: { next: 'log', wamid: id, to_phone: src.to, kind: src.kind, phone: src.phone, order_id: src.order_id, fallback: JSON.stringify(src.fallback || []), created_ms: Date.now(), retried: !!src.retry_of } });\n  else for (const p of src.fallback || []) out.push({ json: { next: 'fallback', payload: p, to: src.to, kind: p.type === 'template' ? 'template' : 'free', phone: src.phone, order_id: src.order_id, reason: JSON.stringify(it.json.error || it.json).slice(0, 300) } });\n});\nreturn out;"
+      }
+    },
+    {
+      "id": "275cec3b-1843-4b67-bece-e04fb37e53b2",
+      "name": "Try Fallback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.next }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "fallback"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "71f96a49-ccda-47ab-8f87-cdde8baf7d7e",
+      "name": "Send Fallback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v24.0/{{ $('Alert In').first().json.phone_number_id || '1342683025589974' }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "4dda64d8-711c-4d27-89eb-fa205ff9eff7",
+      "name": "Check Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return $input.all().map((it, i) => {\n  const src = $('Try Fallback?').itemMatching(i).json;\n  return { json: { wamid: ((it.json.messages || [])[0] || {}).id || '', to_phone: src.to, kind: src.kind, phone: src.phone, order_id: src.order_id, fallback: '[]', created_ms: Date.now(), retried: true } };\n}).filter((x) => x.json.wamid);"
+      }
+    },
+    {
+      "id": "a20d495d-44cf-48f8-b39e-a0edc372d728",
+      "name": "Remember Sent",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2200,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "qwfr6eTv7yNUTMTU",
+          "cachedResultName": "RC Alert Log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "wamid": "={{ $json.wamid }}",
+            "to_phone": "={{ $json.to_phone }}",
+            "kind": "={{ $json.kind }}",
+            "phone": "={{ $json.phone }}",
+            "order_id": "={{ $json.order_id }}",
+            "fallback": "={{ $json.fallback }}",
+            "created_ms": "={{ $json.created_ms }}",
+            "retried": "={{ $json.retried }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "wamid",
+              "displayName": "wamid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "to_phone",
+              "displayName": "to_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kind",
+              "displayName": "kind",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fallback",
+              "displayName": "fallback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_ms",
+              "displayName": "created_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "retried",
+              "displayName": "retried",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "eb951a1a-f71e-4c08-b985-229e6c8ede91",
+      "name": "Failure Report?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        560
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Alert In').first().json.mode === 'failed' && !!$('Logged Message').first().json.wamid }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "664ba8de-6b37-4ad0-930e-8b381e5cc86f",
+      "name": "Mark Retried",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        560
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "qwfr6eTv7yNUTMTU",
+          "cachedResultName": "RC Alert Log"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "wamid",
+              "condition": "eq",
+              "keyValue": "={{ $('Logged Message').first().json.wamid }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "retried": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "retried",
+              "displayName": "retried",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": {
+    "sameAsDraft": true
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

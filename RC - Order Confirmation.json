@@ -1,0 +1,881 @@
+{
+  "id": "GRNIiSkeZsOmXYGV",
+  "name": "RC - Order Confirmation",
+  "active": true,
+  "isArchived": false,
+  "versionId": "adc1c17d-8697-4820-8543-737839957b00",
+  "activeVersionId": "adc1c17d-8697-4820-8543-737839957b00",
+  "triggerCount": 0,
+  "nodeCount": 20,
+  "createdAt": "2026-10-07T06:02:55.209Z",
+  "updatedAt": "2026-10-07T06:04:28.467Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Makes the PDF order confirmation (items with photos, GST, shipping) and sends it to the customer on WhatsApp, with a copy to Mahek. Called by the RC - Admin Console and by the bot when a customer taps \"Get confirmation PDF\".",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Confirm In": {
+      "main": [
+        [
+          {
+            "node": "Photo Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Photo Index": {
+      "main": [
+        [
+          {
+            "node": "Pick Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Photos": {
+      "main": [
+        [
+          {
+            "node": "Download Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Photos": {
+      "main": [
+        [
+          {
+            "node": "Build PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build PDF": {
+      "main": [
+        [
+          {
+            "node": "Upload PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PDF": {
+      "main": [
+        [
+          {
+            "node": "Template Names",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mark PDF Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Names": {
+      "main": [
+        [
+          {
+            "node": "Plan Sends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Sends": {
+      "main": [
+        [
+          {
+            "node": "Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send": {
+      "main": [
+        [
+          {
+            "node": "Check Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Results": {
+      "main": [
+        [
+          {
+            "node": "Try Fallback?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Try Fallback?": {
+      "main": [
+        [
+          {
+            "node": "Send Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failed Completely?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Fallback": {
+      "main": [
+        [
+          {
+            "node": "Check Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Fallback": {
+      "main": [
+        [
+          {
+            "node": "Failed Completely?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Failed Completely?": {
+      "main": [
+        [
+          {
+            "node": "Note For Mahek",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Remember Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Note For Mahek": {
+      "main": [
+        [
+          {
+            "node": "Tell Mahek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark PDF Sent": {
+      "main": [
+        [
+          {
+            "node": "Orders Sheet Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orders Sheet Row": {
+      "main": [
+        [
+          {
+            "node": "Update Orders Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "391d98f6-90ea-4d10-85d6-c24c80f9c57c",
+      "name": "Confirm In",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "mode",
+              "type": "string"
+            },
+            {
+              "name": "order",
+              "type": "object"
+            },
+            {
+              "name": "customer",
+              "type": "object"
+            },
+            {
+              "name": "phone_number_id",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "0fc8a628-0ee0-4c06-90ea-5ff7b8b9178a",
+      "name": "Photo Index",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        300
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://rajcreation.info/data/photos.json",
+        "options": {
+          "timeout": 10000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "0ea4bc0d-4700-4411-9471-09ef5d570eda",
+      "name": "Pick Photos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Which photos the PDF needs: the logo + one catalogue photo per item (photos.json maps item codes to JPEGs).\nconst o = $('Confirm In').first().json.order || {};\nlet idx = {};\ntry { idx = $('Photo Index').first().json || {}; } catch (e) { idx = {}; }\nconst photos = idx.photos || {};\nconst norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');\nconst keys = (code) => { const n = norm(code), c = n.replace(/^(RC|RJ|RAJ|RT|TESLA|T)(?=\\d)/, ''), z = (s) => s.replace(/(^|[A-Z])0+(?=\\d)/g, '$1'); return [n, c, z(n), z(c)].filter(Boolean); };\nlet items = [];\ntry { items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : (o.items || []); } catch (e) { items = []; }\nconst urls = new Map(); // url -> line numbers (-1 = logo)\nconst add = (u, i) => { if (!u) return; const full = 'https://rajcreation.info/' + u; if (!urls.has(full)) urls.set(full, []); urls.get(full).push(i); };\nadd(idx.logo || 'assets/logo-pdf.jpg', -1);\nitems.forEach((x, i) => { const k = keys(x.code).find((k) => photos[k]); if (k) add(photos[k], i); });\nreturn [...urls].slice(0, 80).map(([url, idxs]) => ({ json: { url, idxs } }));"
+      }
+    },
+    {
+      "id": "0f938310-733c-45fd-98ab-d3e98982574f",
+      "name": "Download Photos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.url }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "3bc112ce-3e78-4e9f-8587-a704845c9477",
+      "name": "Build PDF",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Order confirmation PDF for Raj Creations, written by hand (no libraries): A4, Helvetica, JPEG photos.\n// makeOrderPdf(order, { logo: Buffer|null, photos: { [line index]: Buffer } }) -> Buffer\nfunction makeOrderPdf(o, img) {\n  const W = 595.28, H = 841.89, M = 36;\n  const ACC = '0.612 0.239 0.353', INK = '0.141 0.11 0.133', MUTED = '0.43 0.38 0.41', LINE = '0.88 0.84 0.81', SOFT = '0.976 0.945 0.953', WHITE = '1 1 1';\n  // Helvetica / Helvetica-Bold widths (1/1000 em) for characters 32-126\n  const HV = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];\n  const HB = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];\n  // Text as WinAnsi (Latin-1): ₹ -> Rs., dashes, quotes; scripts the standard fonts cannot show are dropped.\n  const latin = (s) => String(s === undefined || s === null ? '' : s)\n    .replace(/₹\\s?/g, 'Rs. ').replace(/[–—]/g, '-').replace(/[‘’]/g, \"'\").replace(/[“”]/g, '\"').replace(/…/g, '...')\n    .replace(/[^\\x20-\\x7e\\xa0-\\xff]/g, '').replace(/\\s+/g, ' ').trim();\n  const tw = (s, size, bold) => { let w = 0; for (const ch of latin(s)) { const c = ch.charCodeAt(0); w += (c >= 32 && c <= 126 ? (bold ? HB : HV)[c - 32] : c === 0xd7 ? 584 : 556); } return w * size / 1000; };\n  const fit = (s, size, bold, max) => { s = latin(s); if (tw(s, size, bold) <= max) return s; while (s.length > 1 && tw(s + '...', size, bold) > max) s = s.slice(0, -1); return s.trimEnd() + '...'; };\n  const esc = (s) => latin(s).replace(/\\\\/g, '\\\\\\\\').replace(/\\(/g, '\\\\(').replace(/\\)/g, '\\\\)');\n  const n2 = (v) => { const n = Number(v) || 0; return Math.round(n * 100) / 100; };\n  const money = (v) => { // Indian grouping: 11,710.13\n    const n = n2(v), neg = n < 0, a = Math.abs(n), int = Math.floor(a), dec = Math.round((a - int) * 100);\n    let s = String(int); if (s.length > 3) { const last = s.slice(-3); let rest = s.slice(0, -3); const parts = []; while (rest.length > 2) { parts.unshift(rest.slice(-2)); rest = rest.slice(0, -2); } if (rest) parts.unshift(rest); s = parts.join(',') + ',' + last; }\n    return (neg ? '-' : '') + 'Rs. ' + s + (dec ? '.' + String(dec).padStart(2, '0') : '');\n  };\n  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];\n  const day = (s) => { const m = String(s || '').match(/^(\\d{4})-(\\d{2})-(\\d{2})/); return m ? m[3] + ' ' + MON[+m[2] - 1] + ' ' + m[1] : String(s || ''); };\n\n  // ---- images ----\n  function jpegInfo(b) {\n    if (!b || b.length < 4 || b[0] !== 0xff || b[1] !== 0xd8) return null;\n    let i = 2;\n    while (i + 9 < b.length) {\n      if (b[i] !== 0xff) { i++; continue; }\n      const mk = b[i + 1];\n      if (mk === 0xd8 || mk === 0x01 || mk === 0xff || (mk >= 0xd0 && mk <= 0xd7)) { i += mk === 0xff ? 1 : 2; continue; }\n      const len = b.readUInt16BE(i + 2);\n      if (mk >= 0xc0 && mk <= 0xcf && mk !== 0xc4 && mk !== 0xc8 && mk !== 0xcc) return { h: b.readUInt16BE(i + 5), w: b.readUInt16BE(i + 7), comps: b[i + 9] };\n      i += 2 + len;\n    }\n    return null;\n  }\n  const images = []; // { buf, info, name }\n  const imageFor = (buf) => {\n    if (!buf) return null;\n    let im = images.find((x) => x.buf === buf || (x.buf.length === buf.length && x.buf.equals(buf)));\n    if (im) return im;\n    const info = jpegInfo(buf);\n    if (!info || !info.w || !info.h || ![1, 3, 4].includes(info.comps)) return null;\n    im = { buf, info, name: 'Im' + (images.length + 1) };\n    images.push(im);\n    return im;\n  };\n  const logo = imageFor(img && img.logo);\n\n  // ---- page drawing ----\n  const pages = [];\n  let c = null; // current page content (array of strings)\n  const T = (x, y, s, size, bold, color) => c.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + size + ' Tf ' + (color || INK) + ' rg ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' Td (' + esc(s) + ') Tj ET');\n  const TR = (xr, y, s, size, bold, color) => T(xr - tw(s, size, bold), y, s, size, bold, color);\n  const TC = (xc, y, s, size, bold, color) => T(xc - tw(s, size, bold) / 2, y, s, size, bold, color);\n  const R = (x, y, w, h, fill) => c.push(fill + ' rg ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2) + ' re f');\n  const L = (x1, y1, x2, y2, color, wd) => c.push(color + ' RG ' + (wd || 0.6) + ' w ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' m ' + x2.toFixed(2) + ' ' + y2.toFixed(2) + ' l S');\n  const IMG = (im, x, y, w, h) => c.push('q ' + w.toFixed(2) + ' 0 0 ' + h.toFixed(2) + ' ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' cm /' + im.name + ' Do Q');\n  const fitImg = (im, x, y, bw, bh) => { const s = Math.min(bw / im.info.w, bh / im.info.h); const w = im.info.w * s, h = im.info.h * s; IMG(im, x + (bw - w) / 2, y + (bh - h) / 2, w, h); };\n  const newPage = () => { c = []; pages.push(c); R(0, H - 6, W, 6, ACC); };\n\n  const items = Array.isArray(o.items) ? o.items : (() => { try { return JSON.parse(o.items || '[]'); } catch (e) { return []; } })();\n  const revised = Number(o.confirm_count) > 1;\n  const title = revised ? 'REVISED ORDER CONFIRMATION' : 'ORDER CONFIRMATION';\n\n  // first page header\n  newPage();\n  let y = H - M - 4;\n  if (logo) fitImg(logo, M, y - 52, 120, 52);\n  else T(M, y - 30, 'Raj Creations', 20, true, ACC);\n  TR(W - M, y - 16, title, revised ? 14 : 17, true, ACC);\n  TR(W - M, y - 34, 'Order ' + o.order_id, 11, true);\n  TR(W - M, y - 48, 'Date: ' + day(o.confirmed_at || o.updated_at || o.created_at), 9, false, MUTED);\n  y -= 66;\n  L(M, y, W - M, y, LINE, 0.8);\n\n  // customer + order boxes\n  const boxH = 74, boxW = (W - 2 * M - 12) / 2;\n  y -= 10 + boxH;\n  R(M, y, boxW, boxH, SOFT);\n  R(M + boxW + 12, y, boxW, boxH, SOFT);\n  T(M + 10, y + boxH - 15, 'BILL TO', 7.5, true, ACC);\n  const custLines = [latin(o.shop) || latin(o.name) || 'Customer', latin(o.shop) && latin(o.name) ? latin(o.name) : '', latin(o.city), o.phone ? '+' + String(o.phone).replace(/^91(\\d{5})(\\d{5})$/, '91 $1 $2') : ''].filter(Boolean).slice(0, 4);\n  custLines.forEach((s, i) => T(M + 10, y + boxH - 29 - i * 12, fit(s, i ? 9 : 10.5, !i, boxW - 20), i ? 9 : 10.5, !i));\n  const bx = M + boxW + 22;\n  T(bx, y + boxH - 15, 'ORDER DETAILS', 7.5, true, ACC);\n  const det = [['Business type', o.btype || '-'], ['Price level', o.level || o.btype || '-'], ['Packets / boxes', String(o.packets || items.reduce((s, x) => s + (x.packets || 0), 0))], ['Dozens', String(o.dozens || items.reduce((s, x) => s + (x.packets || 0) * (x.dz || 0), 0))]];\n  det.forEach(([k, v], i) => { T(bx, y + boxH - 29 - i * 12, k, 9, false, MUTED); TR(M + 2 * boxW + 2, y + boxH - 29 - i * 12, fit(v, 9, true, boxW - 100), 9, true); });\n  y -= 18;\n\n  // table\n  const COL = { n: M + 4, photo: M + 24, item: M + 80, qty: M + 286, rateR: W - M - 86, amtR: W - M - 8 };\n  const ROW = 54, FOOT = 46;\n  const tableHead = () => {\n    R(M, y - 20, W - 2 * M, 20, ACC);\n    T(COL.n, y - 14, '#', 8.5, true, WHITE);\n    T(COL.photo, y - 14, 'Photo', 8.5, true, WHITE);\n    T(COL.item, y - 14, 'Item', 8.5, true, WHITE);\n    T(COL.qty, y - 14, 'Quantity', 8.5, true, WHITE);\n    TR(COL.rateR, y - 14, 'Rate / dozen', 8.5, true, WHITE);\n    TR(COL.amtR, y - 14, 'Amount', 8.5, true, WHITE);\n    y -= 20;\n  };\n  tableHead();\n  items.forEach((x, i) => {\n    if (y - ROW < M + FOOT) {\n      newPage();\n      y = H - M - 10;\n      T(M, y - 10, 'Order ' + o.order_id + ' (continued)', 10, true, ACC);\n      y -= 24;\n      tableHead();\n    }\n    const top = y, mid = top - ROW / 2;\n    if (i % 2) R(M, top - ROW, W - 2 * M, ROW, SOFT);\n    T(COL.n, mid - 3, String(i + 1), 9, false, MUTED);\n    const im = imageFor(img && img.photos && img.photos[i]);\n    if (im) fitImg(im, COL.photo, top - ROW + 4, 46, ROW - 8);\n    else { R(COL.photo, top - ROW + 4, 46, ROW - 8, '0.95 0.93 0.92'); TC(COL.photo + 23, mid - 3, 'no photo', 6.5, false, MUTED); }\n    T(COL.item, mid + 4, fit(x.code, 11, true, COL.qty - COL.item - 8), 11, true);\n    if (x.desc) T(COL.item, mid - 9, fit(x.desc, 8.5, false, COL.qty - COL.item - 8), 8.5, false, MUTED);\n    const unit = x.unit === 'box' ? (x.packets === 1 ? 'box' : 'boxes') : (x.packets === 1 ? 'packet' : 'packets');\n    T(COL.qty, mid + 4, x.packets + ' ' + unit + ' x ' + x.dz + ' dz', 9.5, false);\n    T(COL.qty, mid - 9, '= ' + (x.packets * x.dz) + ' dozen', 8.5, false, MUTED);\n    TR(COL.rateR, mid - 3, money(x.rate), 9.5, false);\n    TR(COL.amtR, mid - 3, money(x.amount), 10, true);\n    L(M, top - ROW, W - M, top - ROW, LINE, 0.5);\n    y -= ROW;\n  });\n\n  // totals\n  const ship = Number(o.shipping);\n  const rows = [['Items total', money(o.items_total)]];\n  if (Number(o.handling) > 0) rows.push(['Handling & packing', money(o.handling)]);\n  rows.push(['GST ' + (o.gst_pct || 5) + '%', money(o.gst)]);\n  rows.push(['Shipping', ship > 0 ? money(ship) : ship === 0 ? 'Free' : 'To be confirmed']);\n  const need = rows.length * 16 + 40 + 70;\n  if (y - need < M + FOOT) { newPage(); y = H - M - 20; }\n  y -= 14;\n  const tx = W - M - 230;\n  rows.forEach(([k, v]) => { T(tx, y - 10, k, 9.5, false, MUTED); TR(COL.amtR, y - 10, v, 9.5, false); y -= 16; });\n  L(tx, y - 2, W - M, y - 2, LINE, 0.8);\n  y -= 8;\n  R(tx - 8, y - 28, W - M - tx + 8, 28, ACC);\n  T(tx, y - 18, 'GRAND TOTAL', 11, true, WHITE);\n  TR(COL.amtR, y - 18, money(o.grand_total || (n2(o.total) + Math.max(0, ship || 0))), 13, true, WHITE);\n  // notes on the left of the totals\n  const notes = ['Rates are per dozen. Items are sold in full packets / boxes.', 'Our team will share the payment and dispatch details.', 'This is an order confirmation, not a GST invoice.', 'The GST invoice is sent with the goods.'];\n  let ny = y + rows.length * 16 + 4;\n  T(M, ny, 'Thank you for your order!', 11, true, ACC);\n  notes.forEach((s, i) => T(M, ny - 15 - i * 11, s, 8, false, MUTED));\n\n  // footer on every page\n  pages.forEach((p, i) => {\n    c = p;\n    L(M, M + 22, W - M, M + 22, LINE, 0.6);\n    T(M, M + 8, 'Raj Creations  |  Manufacturer of hair accessories  |  rajcreation.info  |  +91 91122 96139', 8, false, MUTED);\n    TR(W - M, M + 8, 'Page ' + (i + 1) + ' of ' + pages.length, 8, false, MUTED);\n  });\n\n  // ---- write the PDF file ----\n  const chunks = [];\n  let size = 0;\n  const offsets = [];\n  const put = (x) => { const b = Buffer.isBuffer(x) ? x : Buffer.from(x, 'latin1'); chunks.push(b); size += b.length; };\n  const obj = (n, body) => { offsets[n] = size; put(n + ' 0 obj\\n'); if (Array.isArray(body)) body.forEach(put); else put(body); put('\\nendobj\\n'); };\n  // objects: 1 catalog, 2 pages, 3 F1, 4 F2, then images, then page + content pairs\n  const firstImg = 5, firstPage = firstImg + images.length;\n  put('%PDF-1.4\\n%\\xe2\\xe3\\xcf\\xd3\\n');\n  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');\n  obj(2, '<< /Type /Pages /Kids [' + pages.map((p, i) => (firstPage + 2 * i) + ' 0 R').join(' ') + '] /Count ' + pages.length + ' >>');\n  obj(3, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');\n  obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');\n  images.forEach((im, i) => {\n    const cs = im.info.comps === 1 ? '/DeviceGray' : im.info.comps === 4 ? '/DeviceCMYK /Decode [1 0 1 0 1 0 1 0]' : '/DeviceRGB';\n    obj(firstImg + i, ['<< /Type /XObject /Subtype /Image /Width ' + im.info.w + ' /Height ' + im.info.h + ' /ColorSpace ' + cs + ' /BitsPerComponent 8 /Filter /DCTDecode /Length ' + im.buf.length + ' >>\\nstream\\n', im.buf, '\\nendstream']);\n  });\n  const xobj = images.length ? ' /XObject << ' + images.map((im, i) => '/' + im.name + ' ' + (firstImg + i) + ' 0 R').join(' ') + ' >>' : '';\n  pages.forEach((p, i) => {\n    const content = Buffer.from(p.join('\\n'), 'latin1');\n    obj(firstPage + 2 * i, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>' + xobj + ' >> /Contents ' + (firstPage + 2 * i + 1) + ' 0 R >>');\n    obj(firstPage + 2 * i + 1, ['<< /Length ' + content.length + ' >>\\nstream\\n', content, '\\nendstream']);\n  });\n  const total = firstPage + 2 * pages.length;\n  const xref = size;\n  put('xref\\n0 ' + total + '\\n0000000000 65535 f \\n');\n  for (let n = 1; n < total; n++) put(String(offsets[n]).padStart(10, '0') + ' 00000 n \\n');\n  put('trailer\\n<< /Size ' + total + ' /Root 1 0 R >>\\nstartxref\\n' + xref + '\\n%%EOF\\n');\n  return Buffer.concat(chunks);\n}\n\nconst inp = $('Confirm In').first().json;\nconst o = Object.assign({}, inp.order || {});\ntry { o.items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : (o.items || []); } catch (e) { o.items = []; }\nconst picks = $('Pick Photos').all();\nconst img = { logo: null, photos: {} };\nconst all = $input.all();\nfor (let i = 0; i < all.length; i++) {\n  if (!all[i].binary || !all[i].binary.data) continue;\n  let buf = null;\n  try { buf = await this.helpers.getBinaryDataBuffer(i, 'data'); } catch (e) { buf = null; }\n  if (!buf || !buf.length) continue;\n  for (const k of (picks[i] && picks[i].json.idxs) || []) { if (k === -1) img.logo = buf; else img.photos[k] = buf; }\n}\nconst pdf = makeOrderPdf(o, img);\nconst fileName = 'Raj Creations Order ' + o.order_id + '.pdf';\nlet bin;\ntry { bin = await this.helpers.prepareBinaryData(pdf, fileName, 'application/pdf'); }\ncatch (e) { bin = { data: pdf.toString('base64'), mimeType: 'application/pdf', fileName, fileExtension: 'pdf' }; }\nreturn [{ json: { file_name: fileName, bytes: pdf.length, photos: Object.keys(img.photos).length, logo: !!img.logo }, binary: { data: bin } }];"
+      }
+    },
+    {
+      "id": "985e2b6b-43c3-4842-97f5-957f974fffbc",
+      "name": "Upload PDF",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        300
+      ],
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUpload",
+        "phoneNumberId": "={{ $('Confirm In').first().json.phone_number_id || '1342683025589974' }}",
+        "mediaPropertyName": "data",
+        "additionalFields": {
+          "mediaFileName": "={{ $('Build PDF').first().json.file_name }}"
+        }
+      },
+      "retryOnFail": true,
+      "webhookId": "5cab285a-27dd-43f8-a9aa-c44f10c07ada",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "d44d302b-45a7-483e-b568-a5bb5c212e1b",
+      "name": "Template Names",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "0625da93-83ad-462b-be6b-98d29e5fc121",
+      "name": "Plan Sends",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Who gets the PDF: the customer (a normal message inside their 24-hour window, else the order-confirmed\n// template with a \"Get confirmation PDF\" button) and, after finalizing, a copy for Mahek.\nconst MAHEK = '919112296139';\nconst inp = $('Confirm In').first().json;\nconst o = inp.order || {};\nconst cu = inp.customer || {};\nconst mediaId = $('Upload PDF').first().json.id;\nconst fileName = $('Build PDF').first().json.file_name;\nconst tpl = {};\nfor (const it of $('Template Names').all()) if (it.json && it.json.key) tpl[it.json.key] = it.json;\nconst tname = tpl.confirm && tpl.confirm.status === 'APPROVED' ? tpl.confirm.name : '';\nconst lang = ['hi', 'gu', 'ta', 'te'].includes(o.lang || cu.lang) ? (o.lang || cu.lang) : 'en';\nconst inr2 = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });\nconst ship = Number(o.shipping) || 0;\nconst grand = Number(o.grand_total) || (Number(o.total) || 0) + ship;\nconst name = String(cu.name || o.name || '').trim() || ({ en: 'there', hi: 'जी', gu: 'જી', ta: 'நண்பரே', te: 'గారు' })[lang];\nconst INCL = { en: ship ? 'incl. GST and shipping' : 'incl. GST · free shipping', hi: ship ? 'GST और शिपिंग सहित' : 'GST सहित · फ्री शिपिंग', gu: ship ? 'GST અને શિપિંગ સહિત' : 'GST સહિત · ફ્રી શિપિંગ', ta: ship ? 'GST மற்றும் ஷிப்பிங் உட்பட' : 'GST உட்பட · இலவச ஷிப்பிங்', te: ship ? 'GST మరియు షిప్పింగ్‌తో కలిపి' : 'GST తో కలిపి · ఉచిత షిప్పింగ్' };\nconst CAP = {\n  en: '✅ *Order confirmed – {id}*\\n\\nThank you, {name}! Your order with Raj Creations is confirmed.\\n💰 Total: *{total}* ({incl})\\n\\n📄 Your order confirmation is attached. Our team will share the payment and dispatch details with you. 🙏',\n  hi: '✅ *ऑर्डर कन्फ़र्म – {id}*\\n\\nधन्यवाद, {name}! राज क्रिएशन्स के साथ आपका ऑर्डर कन्फ़र्म हो गया है।\\n💰 कुल: *{total}* ({incl})\\n\\n📄 ऑर्डर कन्फ़र्मेशन साथ में है। पेमेंट और डिस्पैच की जानकारी हमारी टीम आपको देगी। 🙏',\n  gu: '✅ *ઓર્ડર કન્ફર્મ – {id}*\\n\\nઆભાર, {name}! રાજ ક્રિએશન્સ સાથેનો તમારો ઓર્ડર કન્ફર્મ થઈ ગયો છે.\\n💰 કુલ: *{total}* ({incl})\\n\\n📄 ઓર્ડર કન્ફર્મેશન સાથે જોડેલ છે. પેમેન્ટ અને ડિસ્પેચની માહિતી અમારી ટીમ તમને આપશે. 🙏',\n  ta: '✅ *ஆர்டர் உறுதி – {id}*\\n\\nநன்றி, {name}! ராஜ் கிரியேஷன்ஸ் உடனான உங்கள் ஆர்டர் உறுதி செய்யப்பட்டது.\\n💰 மொத்தம்: *{total}* ({incl})\\n\\n📄 ஆர்டர் உறுதிப்படுத்தல் இணைக்கப்பட்டுள்ளது. பணம் செலுத்துதல் மற்றும் அனுப்புதல் விவரங்களை எங்கள் குழு பகிரும். 🙏',\n  te: '✅ *ఆర్డర్ కన్ఫర్మ్ – {id}*\\n\\nధన్యవాదాలు, {name}! రాజ్ క్రియేషన్స్‌తో మీ ఆర్డర్ కన్ఫర్మ్ అయింది.\\n💰 మొత్తం: *{total}* ({incl})\\n\\n📄 ఆర్డర్ కన్ఫర్మేషన్ జతచేయబడింది. పేమెంట్ మరియు డిస్పాచ్ వివరాలను మా టీమ్ మీకు తెలియజేస్తుంది. 🙏',\n};\nconst caption = CAP[lang].split('{id}').join(o.order_id).split('{name}').join(name).split('{total}').join(inr2(grand)).split('{incl}').join(INCL[lang]);\nconst doc = (to, cap) => ({ messaging_product: 'whatsapp', recipient_type: 'individual', to, type: 'document', document: { id: mediaId, filename: fileName, caption: cap.slice(0, 1024) } });\nconst template = tname ? { messaging_product: 'whatsapp', to: o.phone, type: 'template', template: { name: tname, language: { code: 'en_US' }, components: [\n  { type: 'body', parameters: [name, o.order_id, inr2(grand) + ' (' + INCL.en + ')'].map((t) => ({ type: 'text', text: String(t) })) },\n  { type: 'button', sub_type: 'quick_reply', index: '0', parameters: [{ type: 'payload', payload: 'c:pdf:' + o.order_id }] },\n] } } : null;\nconst last = cu.last_in_at ? DateTime.fromFormat(String(cu.last_in_at), 'yyyy-MM-dd HH:mm:ss', { zone: 'Asia/Kolkata' }) : null;\nconst open = inp.mode === 'resend' || !!(last && last.isValid && Date.now() - last.toMillis() < 23.5 * 3600 * 1000);\nconst toCustomer = open || !template ? { kind: 'free', payload: doc(o.phone, caption), fallback: template ? [template] : [] } : { kind: 'template', payload: template, fallback: [doc(o.phone, caption)] };\nconst out = [{ json: Object.assign({ to: o.phone, who: 'customer', phone: o.phone, order_id: o.order_id }, toCustomer) }];\nif (inp.mode !== 'resend') {\n  const nice = '+' + String(o.phone).replace(/^91(\\d{5})(\\d{5})$/, '91 $1 $2');\n  out.push({ json: { to: MAHEK, who: 'mahek', phone: o.phone, order_id: o.order_id, kind: 'free', fallback: [],\n    payload: doc(MAHEK, '📄 *' + o.order_id + '* – ' + (o.shop || o.name || 'customer') + ' (' + nice + ')\\nGrand total ' + inr2(grand) + (ship ? ' incl. ' + inr2(ship) + ' shipping' : ', free shipping') + '\\n\\n' + (open ? '✅ Sent to the customer on WhatsApp.' : tname ? '✅ The customer got a confirmation message with a \"Get confirmation PDF\" button (their 24-hour window was closed).' : '⚠️ Their 24-hour window is closed and the order-confirmed template is not approved yet – please forward this PDF to them from your phone.')) } });\n}\nreturn out;"
+      }
+    },
+    {
+      "id": "30710aea-9192-4d0d-a764-6718c1622245",
+      "name": "Send",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v24.0/{{ $('Confirm In').first().json.phone_number_id || '1342683025589974' }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "ba64855f-7bb9-4655-8088-c69d90f1a949",
+      "name": "Check Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Sent: remember it (a later \"failed\" report sends the fallback). Refused: try the fallback, or tell Mahek.\nconst out = [];\n$input.all().forEach((it, i) => {\n  const src = $('Plan Sends').itemMatching(i).json;\n  const id = ((it.json.messages || [])[0] || {}).id;\n  if (id) out.push({ json: { next: 'log', wamid: id, to_phone: src.to, kind: src.kind, phone: src.phone, order_id: src.order_id, fallback: JSON.stringify(src.fallback || []), created_ms: Date.now(), retried: false } });\n  else {\n    const reason = JSON.stringify(it.json.error || it.json).slice(0, 300);\n    for (const p of src.fallback || []) out.push({ json: { next: 'fallback', payload: p, to: src.to, who: src.who, kind: p.type === 'template' ? 'template' : 'free', phone: src.phone, order_id: src.order_id, reason } });\n    if (!(src.fallback || []).length && src.who === 'customer') out.push({ json: { next: 'note', reason } });\n  }\n});\nreturn out;"
+      }
+    },
+    {
+      "id": "8faa2724-dc53-48b4-8c94-c40578556f7d",
+      "name": "Try Fallback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2200,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.next }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "fallback"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d7fa28b9-f00a-4ab1-b6cf-79ba62f6de04",
+      "name": "Send Fallback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v24.0/{{ $('Confirm In').first().json.phone_number_id || '1342683025589974' }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "fdab2dad-0338-4db0-80cf-90867b3443c5",
+      "name": "Check Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return $input.all().map((it, i) => {\n  const src = $('Try Fallback?').itemMatching(i).json;\n  const id = ((it.json.messages || [])[0] || {}).id;\n  if (id) return { json: { next: 'log', wamid: id, to_phone: src.to, kind: src.kind, phone: src.phone, order_id: src.order_id, fallback: '[]', created_ms: Date.now(), retried: true } };\n  return { json: { next: 'note', reason: src.reason + ' / fallback: ' + JSON.stringify(it.json.error || it.json).slice(0, 200) } };\n});"
+      }
+    },
+    {
+      "id": "23bc9737-7e7c-4d1d-8682-7d9f4ec76e14",
+      "name": "Failed Completely?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2860,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.next }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "note"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c44bba29-765a-4991-80dd-40cd2e4fb403",
+      "name": "Note For Mahek",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Neither way reached the customer: tell Mahek, so she can forward the PDF herself.\nconst src = $input.first().json;\nconst o = $('Confirm In').first().json.order || {};\nreturn [{ json: { payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: '919112296139', type: 'text', text: { body: '⚠️ Could not send the PDF for order ' + o.order_id + ' to the customer (+' + o.phone + ') automatically.\\nReason: ' + String(src.reason || src.error && src.error.message || 'unknown').slice(0, 300) + '\\n\\nPlease forward the PDF above to them from your phone.' } } } }];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "dcfe7727-7812-4d39-82c6-6e4c504aea36",
+      "name": "Tell Mahek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3300,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v24.0/{{ $('Confirm In').first().json.phone_number_id || '1342683025589974' }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "2efd9d79-7ad6-4dac-ae93-2052c84bcfd8",
+      "name": "Remember Sent",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3080,
+        400
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "qwfr6eTv7yNUTMTU",
+          "cachedResultName": "RC Alert Log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "wamid": "={{ $json.wamid }}",
+            "to_phone": "={{ $json.to_phone }}",
+            "kind": "={{ $json.kind }}",
+            "phone": "={{ $json.phone }}",
+            "order_id": "={{ $json.order_id }}",
+            "fallback": "={{ $json.fallback }}",
+            "created_ms": "={{ $json.created_ms }}",
+            "retried": "={{ $json.retried }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "wamid",
+              "displayName": "wamid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "to_phone",
+              "displayName": "to_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kind",
+              "displayName": "kind",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fallback",
+              "displayName": "fallback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_ms",
+              "displayName": "created_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "retried",
+              "displayName": "retried",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "2c69b1ec-3202-4e06-9673-66da572921ea",
+      "name": "Mark PDF Sent",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        560
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "ZZ0zE7NyHqyoJ971",
+          "cachedResultName": "RC Orders"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "order_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Confirm In').first().json.order.order_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pdf_sent_at": "={{ $now.setZone('Asia/Kolkata').toFormat('yyyy-MM-dd HH:mm:ss') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "pdf_sent_at",
+              "displayName": "pdf_sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "526a40e5-5b7b-4a3e-aea5-1ec5d402a91e",
+      "name": "Orders Sheet Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        560
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// One row of the \"Orders\" tab in the leads sheet.\nconst o = Object.assign({}, $('Confirm In').first().json.order, { pdf_sent_at: $now.setZone('Asia/Kolkata').toFormat('yyyy-MM-dd HH:mm:ss') });\nconst LANGS = { hi: 'Hindi', gu: 'Gujarati', ta: 'Tamil', te: 'Telugu', en: 'English' };\nconst ship = Number(o.shipping);\nreturn [{ json: {\n  'Order ID': o.order_id,\n  'Status': o.status === 'confirmed' ? 'Confirmed' : o.status === 'updated' ? 'Updated by customer' : o.status === 'cancelled' ? 'Cancelled' : 'New',\n  'Order date': o.created_at || '',\n  'Customer': o.name || '',\n  'Phone': o.phone ? '+' + o.phone : '',\n  'Shop': o.shop || '',\n  'City': o.city || '',\n  'Business type': o.btype || '',\n  'Price level': o.level || '',\n  'Language': LANGS[o.lang] || o.lang || '',\n  'Items': o.lines_text || '',\n  'Packets / boxes': o.packets,\n  'Dozens': o.dozens,\n  'Items total': o.items_total,\n  'Handling': o.handling || 0,\n  'GST': o.gst,\n  'Total incl. GST': o.total,\n  'Shipping': ship >= 0 ? ship : 'not set',\n  'Grand total': o.grand_total || '',\n  'Confirmed at': o.confirmed_at || '',\n  'PDF sent at': o.pdf_sent_at || '',\n  'Updated at': o.updated_at || '',\n  'Version': o.version || 1,\n  'Notes': o.note || '',\n  'Chat': o.phone ? 'https://wa.me/' + o.phone : '',\n} }];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "4832553d-459a-494a-8bd6-10108a560468",
+      "name": "Update Orders Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        560
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1W4jmnP3XUVXk7EimIOOjTx4GcfaqHiUAXnaM1bsGiHE/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Orders"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Order ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "retryOnFail": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "niAxCR2tItJiqkef",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": {
+    "sameAsDraft": true
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

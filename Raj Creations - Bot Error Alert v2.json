@@ -1,12 +1,101 @@
 {
+  "id": "Y5s1JqJWv7vTBvea",
   "name": "Raj Creations - Bot Error Alert v2",
+  "active": true,
+  "isArchived": false,
+  "versionId": "3dc35702-22c0-4fd8-b609-acd7db5cfece",
+  "activeVersionId": "3dc35702-22c0-4fd8-b609-acd7db5cfece",
+  "triggerCount": 0,
+  "nodeCount": 5,
+  "createdAt": "2026-10-02T07:11:09.344Z",
+  "updatedAt": "2026-10-03T11:44:59.454Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Error handler for the v2 funnel: alerts Mahek via the rc_bot_problem WhatsApp template, falling back to plain text.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "On Bot Error": {
+      "main": [
+        [
+          {
+            "node": "Build Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Mahek - Bot Error (Template)": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Notify Mahek - Bot Error (Plain Text Fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Error Alert": {
+      "main": [
+        [
+          {
+            "node": "Problem Template Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Problem Template Name": {
+      "main": [
+        [
+          {
+            "node": "Notify Mahek - Bot Error (Template)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "nodes": [
     {
       "id": "1d11f9c7-f052-400f-81fc-4fb4e570f32e",
       "name": "On Bot Error",
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "parameters": {}
     },
     {
@@ -14,17 +103,45 @@
       "name": "Build Error Alert",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [220, 0],
+      "position": [
+        220,
+        0
+      ],
       "parameters": {
         "mode": "manual",
         "includeOtherFields": false,
         "assignments": {
           "assignments": [
-            { "id": "step", "name": "step", "type": "string", "value": "={{ String($json.execution?.lastNodeExecuted || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').slice(0, 100) }}" },
-            { "id": "error", "name": "error", "type": "string", "value": "={{ String($json.execution?.error?.message || $json.trigger?.error?.message || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').replace(/ {2,}/g, ' ').slice(0, 250) }}" },
-            { "id": "time", "name": "time", "type": "string", "value": "={{ $now.setZone('Asia/Kolkata').toFormat('dd MMM yyyy, hh:mm a') }}" },
-            { "id": "link", "name": "link", "type": "string", "value": "={{ $json.execution?.url || $json.execution?.id || '-' }}" },
-            { "id": "wf", "name": "wf", "type": "string", "value": "={{ $json.workflow?.name || 'Raj Creations - WhatsApp Lead Funnel' }}" }
+            {
+              "id": "step",
+              "name": "step",
+              "type": "string",
+              "value": "={{ String($json.execution?.lastNodeExecuted || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').slice(0, 100) }}"
+            },
+            {
+              "id": "error",
+              "name": "error",
+              "type": "string",
+              "value": "={{ String($json.execution?.error?.message || $json.trigger?.error?.message || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').replace(/ {2,}/g, ' ').slice(0, 250) }}"
+            },
+            {
+              "id": "time",
+              "name": "time",
+              "type": "string",
+              "value": "={{ $now.setZone('Asia/Kolkata').toFormat('dd MMM yyyy, hh:mm a') }}"
+            },
+            {
+              "id": "link",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.execution?.url || $json.execution?.id || '-' }}"
+            },
+            {
+              "id": "wf",
+              "name": "wf",
+              "type": "string",
+              "value": "={{ $json.workflow?.name || 'Raj Creations - WhatsApp Lead Funnel' }}"
+            }
           ]
         },
         "options": {}
@@ -35,7 +152,10 @@
       "name": "Notify Mahek - Bot Error (Template)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [440, 0],
+      "position": [
+        440,
+        0
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://graph.facebook.com/v24.0/1342683025589974/messages",
@@ -44,18 +164,26 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ messaging_product: \"whatsapp\", to: \"919112296139\", type: \"template\", template: { name: \"rc_bot_error_alert\", language: { code: \"en_US\" }, components: [{ type: \"body\", parameters: [{ type: \"text\", text: $json.step || \"-\" }, { type: \"text\", text: $json.error || \"-\" }, { type: \"text\", text: $json.time }] }] } }) }}",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: \"whatsapp\", to: \"919112296139\", type: \"template\", template: { name: ($('Problem Template Name').first().json.name || \"rc_bot_problem\"), language: { code: \"en_US\" }, components: [{ type: \"body\", parameters: [{ type: \"text\", text: $('Build Error Alert').item.json.step || \"-\" }, { type: \"text\", text: $('Build Error Alert').item.json.error || \"-\" }, { type: \"text\", text: $('Build Error Alert').item.json.time }] }] } }) }}",
         "options": {}
       },
       "onError": "continueErrorOutput",
-      "credentials": { "whatsAppApi": { "id": "KsMyfId0Tnk8UTFr", "name": "WhatsApp account" } }
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
     },
     {
       "id": "4b978edc-c5f7-46f6-b179-5edca82ff8b8",
       "name": "Notify Mahek - Bot Error (Plain Text Fallback)",
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
-      "position": [660, 100],
+      "position": [
+        660,
+        100
+      ],
       "parameters": {
         "resource": "message",
         "operation": "send",
@@ -65,14 +193,54 @@
         "textBody": "=⚠️ The WhatsApp bot hit an error and a customer may not have got a reply.\n\nWorkflow: {{ $('Build Error Alert').item.json.wf }}\nFailed step: {{ $('Build Error Alert').item.json.step }}\nError: {{ $('Build Error Alert').item.json.error }}\nTime: {{ $('Build Error Alert').item.json.time }}\nExecution: {{ $('Build Error Alert').item.json.link }}\n\nPlease check recent customer chats."
       },
       "webhookId": "d2ead8b9-3001-4347-8c4e-087bb843af93",
-      "credentials": { "whatsAppApi": { "id": "KsMyfId0Tnk8UTFr", "name": "WhatsApp account" } }
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "ef9da084-9a63-44c6-8033-a8f3e6566216",
+      "name": "Problem Template Name",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        330,
+        -160
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "problem"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
     }
   ],
-  "connections": {
-    "On Bot Error": { "main": [[{ "node": "Build Error Alert", "type": "main", "index": 0 }]] },
-    "Build Error Alert": { "main": [[{ "node": "Notify Mahek - Bot Error (Template)", "type": "main", "index": 0 }]] },
-    "Notify Mahek - Bot Error (Template)": { "main": [[], [{ "node": "Notify Mahek - Bot Error (Plain Text Fallback)", "type": "main", "index": 0 }]] }
+  "nodeGroups": [],
+  "activeVersion": {
+    "sameAsDraft": true
   },
-  "settings": { "executionOrder": "v1" },
-  "id": "Y5s1JqJWv7vTBvea"
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
 }
