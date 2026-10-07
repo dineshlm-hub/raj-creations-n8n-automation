@@ -188,6 +188,38 @@ If the customer's 24-hour window is closed, they get the `rc_order_confirmed` te
 
 The approved WhatsApp templates (alerts to Mahek, order confirmed) still say "Raj Creations": Meta has to approve any change to their wording.
 
+## Mahek's order page: rajcreation.info/orders/ (from 7 Oct 2026)
+
+A private page where Mahek checks website orders, changes them and tells the customer. It is not linked from the site and is kept out of search engines.
+
+**Log in**
+- Open **rajcreation.info/orders/** and tap **Send code to WhatsApp**. A 6-digit code arrives from the bot within seconds. Type it in.
+- The code works for 10 minutes. After 5 wrong tries it stops working. At most 5 codes are sent per hour.
+- WhatsApp only lets the bot message Mahek within 24 hours of her last message to it. If no code arrives, send "hi" to the bot first.
+- The login lasts 7 days on that phone. **Log out** ends it at once.
+
+**Change an order** (newest 100 orders, filter Open / Confirmed / All, search):
+- **− / +** or type a number to change packets or boxes.
+- **❌ Out of stock** removes an item, and the customer is told it is out of stock. **🔁 Suggest replacement** or **🔁 Replace** picks another item from the rate list at the customer's price level. The rate can be changed if a different price was agreed.
+- **⚠️ Only some** sets a limited quantity, e.g. "only 3 packets available (you ordered 8)".
+- **➕ Add an item**, **➖ Remove**, **↩ Undo**.
+- Set the shipping cost and an optional note to the customer.
+
+**Send**
+- **Review & send** shows the changes, the new total and the exact message in the customer's language, with English below it. Then **Save & send**. Untick the box to save without a message.
+- **✅ Confirm & PDF** does the same and then sends the reference-receipt PDF, exactly like Finalize in the WhatsApp console. Mahek gets a copy.
+- Customer messaged in the last 24 hours: the update goes as a normal WhatsApp message from the bot.
+- Not in the last 24 hours: the update goes as the `rc_order_update` template once Meta approves it. The Template Guardian creates it automatically. Until then, the page shows a **Send from my WhatsApp** button with the message ready to send from Mahek's phone.
+- Template messages also fail while Meta's billing issue (error 131042, below) is not fixed. After a template send, the page always offers the same button as a backup.
+- The customer's reply reaches Mahek like any other follow-up after an order: the bot alerts her. The bot is never paused automatically.
+- If the customer changed the order on the website while Mahek was editing, saving is stopped and the page reloads the new version, so nothing is overwritten.
+
+**Behind it:**
+- n8n workflow **RC - Order Portal**, webhook `rc-portal`. It accepts requests only from rajcreation.info.
+- Data table **RC Portal Sessions** holds only hashes of the login codes and logins.
+- Orders are saved in the same **RC Orders** table and **Orders** sheet tab as the bot and console use. Each change is written to the order's Notes.
+- Page files: `website/src/orders.html` and `website/src/assets/orders.js`. The API address is `PORTAL_API` in `website/build/config.py`.
+
 ## What changed earlier on 7 Oct 2026
 
 1. **Why alerts stopped:** Meta accepted the alert templates but then failed them with error **131042** ("Business eligibility payment issue"). The bot's WhatsApp account has no tax or payment details since AiSensy was removed. Fix it in **Meta Business → Billing hub**. Until then, alerts only reach Mahek inside her 24-hour window.

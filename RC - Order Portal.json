@@ -1,0 +1,1476 @@
+{
+  "id": "KYDI21stzAMularB",
+  "name": "RC - Order Portal",
+  "active": true,
+  "isArchived": false,
+  "versionId": "b41e78cc-8341-4590-8f1c-3877ec6b8e46",
+  "activeVersionId": "b41e78cc-8341-4590-8f1c-3877ec6b8e46",
+  "triggerCount": 1,
+  "nodeCount": 25,
+  "createdAt": "2026-10-07T10:35:54.315Z",
+  "updatedAt": "2026-10-07T10:36:37.189Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "API behind Mahek's order page rajcreation.info/orders/: WhatsApp login code, list/view/edit orders, notify customers of changes, confirm & send PDF.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Portal API": {
+      "main": [
+        [
+          {
+            "node": "Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request": {
+      "main": [
+        [
+          {
+            "node": "Sessions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sessions": {
+      "main": [
+        [
+          {
+            "node": "Admin State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Admin State": {
+      "main": [
+        [
+          {
+            "node": "Recent Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recent Orders": {
+      "main": [
+        [
+          {
+            "node": "This Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "This Order": {
+      "main": [
+        [
+          {
+            "node": "Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer": {
+      "main": [
+        [
+          {
+            "node": "Template Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Names": {
+      "main": [
+        [
+          {
+            "node": "Handle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle": {
+      "main": [
+        [
+          {
+            "node": "Login Rows?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login Rows?": {
+      "main": [
+        [
+          {
+            "node": "Login Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clean Up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login Rows": {
+      "main": [
+        [
+          {
+            "node": "Save Login Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Login Rows": {
+      "main": [
+        [
+          {
+            "node": "Clean Up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Up?": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Login Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Login Rows": {
+      "main": [
+        [
+          {
+            "node": "Save Order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Order?": {
+      "main": [
+        [
+          {
+            "node": "Save Order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Messages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Order": {
+      "main": [
+        [
+          {
+            "node": "Orders Sheet Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orders Sheet Row": {
+      "main": [
+        [
+          {
+            "node": "Update Orders Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Orders Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Messages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Messages?": {
+      "main": [
+        [
+          {
+            "node": "Messages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm Order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Messages": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Confirm Order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Order?": {
+      "main": [
+        [
+          {
+            "node": "Make & Send PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make & Send PDF": {
+      "main": [
+        [
+          {
+            "node": "Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "b7230d5c-9d32-4f05-9071-d6587b5166d4",
+      "name": "Portal API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        80
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rc-portal",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://rajcreation.info"
+        }
+      },
+      "webhookId": "05e414d6-9cf2-4dc8-befd-1cd2d615de58"
+    },
+    {
+      "id": "d147cd61-b6d2-45ec-a4e0-4793e133dc0c",
+      "name": "Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        80
+      ],
+      "parameters": {
+        "jsCode": "// The page posts p=<json> as a plain form (so the browser sends no CORS preflight); JSON bodies work too.\nlet b = $('Portal API').first().json.body || {};\nif (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } }\nif (b && typeof b.p === 'string') { try { b = JSON.parse(b.p); } catch (e) { b = {}; } }\nif (!b || typeof b !== 'object' || Array.isArray(b)) b = {};\nb.action = String(b.action || '');\nb.order_id = String(b.order_id || '').slice(0, 40);\nreturn [{ json: b }];\n"
+      }
+    },
+    {
+      "id": "d9ecddfb-3a6d-4db6-b83a-4ce69004fec3",
+      "name": "Sessions",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "TY8Qd8CziSDgu1HD",
+          "cachedResultName": "RC Portal Sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "4a811732-137d-4c3f-b8fc-783c27ae86c2",
+      "name": "Admin State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "AsCRiboQ92mUumOU",
+          "cachedResultName": "RC Bot State"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "admin"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "d64446dd-f941-4c1f-a15e-0a73451566ff",
+      "name": "Recent Orders",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "ZZ0zE7NyHqyoJ971",
+          "cachedResultName": "RC Orders"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "order_id",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "limit": 100,
+        "orderBy": true,
+        "orderByColumn": "created_ms",
+        "orderByDirection": "DESC"
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "eb694fe9-f628-4b50-9e20-c815230d2dd1",
+      "name": "This Order",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "ZZ0zE7NyHqyoJ971",
+          "cachedResultName": "RC Orders"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "order_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Request').first().json.order_id || '-' }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "c48f98e3-8f0f-44a7-b2aa-dc232aa37b1c",
+      "name": "Customer",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "ZNmb8TjYIAI4O4iv",
+          "cachedResultName": "RC Customers"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone",
+              "condition": "eq",
+              "keyValue": "={{ $('This Order').first().json.phone || '-' }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "2d8b8617-32a0-43ff-8fd3-6f27a26442cb",
+      "name": "Template Names",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "em5LRgVKtDPgUDxK",
+          "cachedResultName": "WhatsApp Templates"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "0cf263d7-bf5d-47a1-9b53-8f4a7145cb7b",
+      "name": "Handle",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        80
+      ],
+      "parameters": {
+        "jsCode": "// Mahek's order page (rajcreation.info/orders/): one request from the page = one run of this workflow.\n// Login is a 6-digit code sent to Mahek's WhatsApp; the page then keeps a session token. Only hashes of the\n// code and token are stored (table \"RC Portal Sessions\"). Saving an order uses the same RC Orders rows as the\n// bot and the WhatsApp console; \"Confirm & send PDF\" runs \"RC - Order Confirmation\" like the console does.\nconst MAHEK = '919112296139';\nconst CODE_MIN = 10, CODE_TRIES = 5, CODES_PER_HOUR = 5, SESSION_DAYS = 7;\nconst ZONE = 'Asia/Kolkata', FMT = 'yyyy-MM-dd HH:mm:ss';\nconst nowMs = Date.now();\nconst nowDt = $now.setZone(ZONE);\nconst now = nowDt.toFormat(FMT);\n\n// ---- request ----\nconst b = $('Request').first().json;\nconst action = b.action;\n\n// ---- hashing and random tokens ----\nlet C = null, cryptoMode = 'none';\ntry { C = require('crypto'); cryptoMode = 'node'; } catch (e) { C = null; }\nfunction sha256(s) {\n  if (C) return C.createHash('sha256').update(String(s), 'utf8').digest('hex');\n  // plain-JS SHA-256 in case the crypto module is not allowed\n  const msg = unescape(encodeURIComponent(String(s)));\n  const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];\n  const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];\n  const bytes = [];\n  for (let i = 0; i < msg.length; i++) bytes.push(msg.charCodeAt(i));\n  const bitLen = bytes.length * 8;\n  bytes.push(0x80);\n  while (bytes.length % 64 !== 56) bytes.push(0);\n  for (let i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (bitLen >>> (i * 8)) & 0xff);\n  const rotr = (x, n) => (x >>> n) | (x << (32 - n));\n  for (let o = 0; o < bytes.length; o += 64) {\n    const w = [];\n    for (let i = 0; i < 16; i++) w[i] = (bytes[o + i * 4] << 24) | (bytes[o + i * 4 + 1] << 16) | (bytes[o + i * 4 + 2] << 8) | bytes[o + i * 4 + 3];\n    for (let i = 16; i < 64; i++) {\n      const s0 = rotr(w[i - 15], 7) ^ rotr(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = rotr(w[i - 2], 17) ^ rotr(w[i - 2], 19) ^ (w[i - 2] >>> 10);\n      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;\n    }\n    let [a, bb, c, d, e, f, g, h] = H;\n    for (let i = 0; i < 64; i++) {\n      const t1 = (h + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0;\n      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;\n      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;\n    }\n    H[0] = (H[0] + a) | 0; H[1] = (H[1] + bb) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;\n    H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;\n  }\n  return H.map((x) => (x >>> 0).toString(16).padStart(8, '0')).join('');\n}\nfunction randomHex(nBytes) {\n  if (C) return C.randomBytes(nBytes).toString('hex');\n  const g = typeof globalThis !== 'undefined' && globalThis.crypto && globalThis.crypto.getRandomValues ? globalThis.crypto : null;\n  if (g) { cryptoMode = 'web'; const a = new Uint8Array(nBytes); g.getRandomValues(a); return Array.from(a).map((x) => x.toString(16).padStart(2, '0')).join(''); }\n  cryptoMode = 'weak';\n  let out = '';\n  while (out.length < nBytes * 2) out += sha256(Math.random() + ':' + nowMs + ':' + out + ':' + Math.random());\n  return out.slice(0, nBytes * 2);\n}\nconst randomCode = () => String(parseInt(randomHex(6), 16) % 1000000).padStart(6, '0');\n\n// ---- data ----\nconst rowsOf = (name) => { try { return $(name).all().map((i) => i.json).filter((r) => r && Object.keys(r).length); } catch (e) { return []; } };\nconst sessions = rowsOf('Sessions');\nconst adminRow = rowsOf('Admin State')[0] || {};\nlet admin = {};\ntry { admin = JSON.parse(adminRow.value || '{}') || {}; } catch (e) { admin = {}; }\nconst recent = rowsOf('Recent Orders').filter((o) => o.order_id);\nconst thisOrder = rowsOf('This Order').find((o) => o.order_id && o.order_id === b.order_id) || null;\nconst customer = rowsOf('Customer').find((c) => c.phone && thisOrder && c.phone === thisOrder.phone) || null;\nconst tpl = {};\nfor (const t of rowsOf('Template Names')) if (t.key) tpl[t.key] = t;\n\n// ---- helpers ----\nconst out = { response: null, rows: [], cleanup: false, order_update: null, messages: [], confirm: null, manual: null };\nconst reply = (r) => { out.response = Object.assign({ ok: true }, r); };\nconst fail = (error, message, extra) => { out.response = Object.assign({ ok: false, error, message }, extra || {}); };\nconst clip = (s, n) => { const v = String(s === undefined || s === null ? '' : s).replace(/\\s+/g, ' ').trim(); return v.length > n ? v.slice(0, n - 1) + '…' : v; };\nconst r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;\nconst inr2 = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });\nconst norm = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');\nconst itemsOf = (o) => { try { const a = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : o.items; return Array.isArray(a) ? a : []; } catch (e) { return []; } };\nconst parseT = (s) => { if (!s) return null; const d = DateTime.fromFormat(String(s).trim(), FMT, { zone: ZONE }); return d.isValid ? d : null; };\nconst windowOpen = (c) => { const d = c && parseT(c.last_in_at); return !!(d && nowMs - d.toMillis() < 23.5 * 3600 * 1000); };\nconst mahekWindowOpen = () => nowMs - (Number(admin.last_in_ms) || 0) < 23.5 * 3600 * 1000;\nconst langOf = (o) => (['hi', 'gu', 'ta', 'te'].includes(o.lang) ? o.lang : (((customer && String(customer.stage || '').match(/^(hi|gu|ta|te|en):/)) || [])[1]) || 'en');\nfunction totals(items, handling) {\n  const it = r2(items.reduce((s, x) => s + (Number(x.amount) || 0), 0));\n  const gst = r2((it + (Number(handling) || 0)) * 0.05);\n  return { items_total: it, gst, total: r2(it + (Number(handling) || 0) + gst), packets: items.reduce((s, x) => s + (Number(x.packets) || 0), 0), dozens: r2(items.reduce((s, x) => s + (Number(x.packets) || 0) * (Number(x.dz) || 0), 0)) };\n}\nconst lineFull = (x, i) => (i + 1) + '. ' + x.code + (x.desc ? ' (' + x.desc + ')' : '') + ' – ' + x.packets + ' ' + x.unit + ' × ' + x.dz + ' dz × ' + inr2(x.rate) + ' = ' + inr2(x.amount);\nconst shipOf = (o) => { const s = o.shipping; return s === '' || s === null || s === undefined || !Number.isFinite(Number(s)) ? -1 : Number(s); };\nfunction orderOut(o) {\n  return {\n    order_id: o.order_id, phone: o.phone, name: o.name || '', shop: o.shop || '', city: o.city || '', btype: o.btype || '', level: o.level || '', lang: o.lang || 'en',\n    items: itemsOf(o), packets: Number(o.packets) || 0, dozens: Number(o.dozens) || 0, items_total: Number(o.items_total) || 0, handling: Number(o.handling) || 0,\n    gst: Number(o.gst) || 0, total: Number(o.total) || 0, shipping: shipOf(o), grand_total: Number(o.grand_total) || 0, status: o.status || 'new',\n    version: Number(o.version) || 1, needs_sales: o.needs_sales || '', created_at: o.created_at || '', updated_at: o.updated_at || '', confirmed_at: o.confirmed_at || '',\n    pdf_sent_at: o.pdf_sent_at || '', note: o.note || '', confirm_count: Number(o.confirm_count) || 0,\n  };\n}\n\n// ---- customer message (in the customer's language) ----\nconst L = {\n  en: { head: '📝 *Update to your order {id}*', intro: 'Hello {name}, there are some changes to your Raj Creation order:', oos: '❌ {item} – out of stock, removed', replaced: '🔁 {item} – out of stock, replaced with {new} × {n} {unit}', limited: '⚠️ {item} – only {n} {unit} available (you ordered {m})', qty: '✏️ {item} – {m} → {n} {unit}', added: '➕ Added {new} × {n} {unit}', removed: '➖ {item} – removed', total: '💰 New total: *{total}* (incl. GST)', ship: '🚚 Shipping: {ship}', free: 'free', note: '📌 Note from Mahek: {note}', end: 'If you have any questions or would like something else instead, just reply to this message. 🙏', pkt: ['packet', 'packets'], box: ['box', 'boxes'], there: 'there' },\n  hi: { head: '📝 *आपके ऑर्डर {id} में बदलाव*', intro: 'नमस्ते {name}, राज क्रिएशन के साथ आपके ऑर्डर में कुछ बदलाव हुए हैं:', oos: '❌ {item} – स्टॉक में नहीं है, हटा दिया गया', replaced: '🔁 {item} – स्टॉक में नहीं है, इसकी जगह {new} × {n} {unit}', limited: '⚠️ {item} – सिर्फ़ {n} {unit} उपलब्ध हैं (आपने {m} ऑर्डर किए थे)', qty: '✏️ {item} – {m} → {n} {unit}', added: '➕ जोड़ा गया: {new} × {n} {unit}', removed: '➖ {item} – हटा दिया गया', total: '💰 नया कुल: *{total}* (GST सहित)', ship: '🚚 शिपिंग: {ship}', free: 'फ्री', note: '📌 महेक का संदेश: {note}', end: 'कोई सवाल हो या इसकी जगह कुछ और चाहिए, तो बस इस मैसेज का जवाब दें। 🙏', pkt: ['पैकेट', 'पैकेट'], box: ['बॉक्स', 'बॉक्स'], there: 'जी' },\n  gu: { head: '📝 *તમારા ઓર્ડર {id} માં ફેરફાર*', intro: 'નમસ્તે {name}, રાજ ક્રિએશન સાથેના તમારા ઓર્ડરમાં થોડા ફેરફાર થયા છે:', oos: '❌ {item} – સ્ટોકમાં નથી, કાઢી નાખ્યું', replaced: '🔁 {item} – સ્ટોકમાં નથી, તેના બદલે {new} × {n} {unit}', limited: '⚠️ {item} – ફક્ત {n} {unit} ઉપલબ્ધ છે (તમે {m} ઓર્ડર કર્યા હતા)', qty: '✏️ {item} – {m} → {n} {unit}', added: '➕ ઉમેર્યું: {new} × {n} {unit}', removed: '➖ {item} – કાઢી નાખ્યું', total: '💰 નવું કુલ: *{total}* (GST સહિત)', ship: '🚚 શિપિંગ: {ship}', free: 'ફ્રી', note: '📌 મહેકનો સંદેશ: {note}', end: 'કોઈ પ્રશ્ન હોય અથવા તેના બદલે બીજું કંઈ જોઈએ, તો આ મેસેજનો જવાબ આપો. 🙏', pkt: ['પેકેટ', 'પેકેટ'], box: ['બોક્સ', 'બોક્સ'], there: 'જી' },\n  ta: { head: '📝 *உங்கள் ஆர்டர் {id} இல் மாற்றம்*', intro: 'வணக்கம் {name}, ராஜ் கிரியேஷன் உடனான உங்கள் ஆர்டரில் சில மாற்றங்கள் உள்ளன:', oos: '❌ {item} – ஸ்டாக் இல்லை, நீக்கப்பட்டது', replaced: '🔁 {item} – ஸ்டாக் இல்லை, அதற்குப் பதிலாக {new} × {n} {unit}', limited: '⚠️ {item} – {n} {unit} மட்டுமே உள்ளது (நீங்கள் ஆர்டர் செய்தது {m})', qty: '✏️ {item} – {m} → {n} {unit}', added: '➕ சேர்க்கப்பட்டது: {new} × {n} {unit}', removed: '➖ {item} – நீக்கப்பட்டது', total: '💰 புதிய மொத்தம்: *{total}* (GST உட்பட)', ship: '🚚 ஷிப்பிங்: {ship}', free: 'இலவசம்', note: '📌 மஹேக்கின் குறிப்பு: {note}', end: 'ஏதேனும் கேள்விகள் இருந்தால் அல்லது இதற்குப் பதிலாக வேறு ஏதாவது வேண்டுமென்றால், இந்த மெசேஜுக்கு பதில் அனுப்புங்கள். 🙏', pkt: ['பாக்கெட்', 'பாக்கெட்'], box: ['பெட்டி', 'பெட்டிகள்'], there: 'நண்பரே' },\n  te: { head: '📝 *మీ ఆర్డర్ {id} లో మార్పులు*', intro: 'నమస్తే {name}, రాజ్ క్రియేషన్‌తో మీ ఆర్డర్‌లో కొన్ని మార్పులు ఉన్నాయి:', oos: '❌ {item} – స్టాక్ లేదు, తీసివేయబడింది', replaced: '🔁 {item} – స్టాక్ లేదు, దానికి బదులుగా {new} × {n} {unit}', limited: '⚠️ {item} – {n} {unit} మాత్రమే అందుబాటులో ఉన్నాయి (మీరు ఆర్డర్ చేసినవి {m})', qty: '✏️ {item} – {m} → {n} {unit}', added: '➕ జోడించబడింది: {new} × {n} {unit}', removed: '➖ {item} – తీసివేయబడింది', total: '💰 కొత్త మొత్తం: *{total}* (GST తో కలిపి)', ship: '🚚 షిప్పింగ్: {ship}', free: 'ఉచితం', note: '📌 మహేక్ సందేశం: {note}', end: 'ఏవైనా ప్రశ్నలు ఉంటే లేదా దీనికి బదులుగా వేరేది కావాలంటే, ఈ మెసేజ్‌కు రిప్లై ఇవ్వండి. 🙏', pkt: ['ప్యాకెట్', 'ప్యాకెట్లు'], box: ['బాక్స్', 'బాక్స్‌లు'], there: 'గారు' },\n};\nconst fill = (s, v) => String(s).replace(/\\{(\\w+)\\}/g, (m, k) => (v[k] === undefined ? m : String(v[k])));\nconst label = (x) => x.code + (x.desc ? ' (' + x.desc + ')' : '');\nfunction changeLine(t, c) {\n  const unit = (x, n) => (t[x.unit === 'box' ? 'box' : 'pkt'] || t.pkt)[Number(n) === 1 ? 0 : 1];\n  if (c.type === 'replaced') return fill(t.replaced, { item: label(c.old), new: label(c.item), n: c.item.packets, unit: unit(c.item, c.item.packets) });\n  if (c.type === 'added') return fill(t.added, { new: label(c.item), n: c.item.packets, unit: unit(c.item, c.item.packets) });\n  if (c.type === 'limited' || c.type === 'qty') return fill(t[c.type], { item: label(c.old), n: c.item.packets, m: c.old.packets, unit: unit(c.item, c.item.packets) });\n  return fill(t[c.type], { item: label(c.old) });\n}\nfunction customerMessage(o, changes, tot, ship, note, lang) {\n  const t = L[lang] || L.en;\n  const name = String((customer && customer.whatsapp_name) || o.name || '').trim() || t.there;\n  const parts = [fill(t.head, { id: o.order_id }), '', fill(t.intro, { name }), '', changes.map((c) => changeLine(t, c)).join('\\n'), '', fill(t.total, { total: inr2(tot.total) })];\n  if (ship >= 0) parts.push(fill(t.ship, { ship: ship ? inr2(ship) : t.free }));\n  if (note) parts.push('', fill(t.note, { note }));\n  parts.push('', t.end);\n  return parts.join('\\n').replace(/\\n{3,}/g, '\\n\\n');\n}\n\n// ---- order edits ----\n// The page sends the whole new item list. Items can carry: replaces (code of the out-of-stock item they replace),\n// stock: 'limited' (fewer packets because of stock). removed: [{ code, dz, reason: 'oos' | 'removed' }].\nfunction cleanItems(list) {\n  if (!Array.isArray(list) || list.length > 300) return null;\n  const items = [];\n  for (const x of list) {\n    if (!x || typeof x !== 'object') return null;\n    const code = clip(x.code, 40), desc = clip(x.desc, 80), unit = x.unit === 'box' ? 'box' : 'pkt';\n    const packets = Number(x.packets), dz = Number(x.dz), rate = Number(x.rate);\n    if (!code || !(Number.isInteger(packets) && packets > 0 && packets <= 99999) || !(dz > 0 && dz <= 1000) || !(rate > 0 && rate <= 1000000)) return null;\n    const it = { code, desc, packets, unit, dz, rate, amount: r2(packets * dz * rate) };\n    if (x.replaces) it.replaces = clip(x.replaces, 40);\n    if (x.stock === 'limited') it.stock = 'limited';\n    items.push(it);\n  }\n  return items;\n}\nconst sameItem = (a, b2) => norm(a.code) === norm(b2.code) && Number(a.dz) === Number(b2.dz);\nfunction diff(oldItems, newItems, removed) {\n  const changes = [], used = new Set();\n  const reasons = {};\n  for (const r of Array.isArray(removed) ? removed : []) if (r && r.code) reasons[norm(r.code) + '|' + Number(r.dz || 0)] = r.reason === 'oos' ? 'oos' : 'removed';\n  for (const o of oldItems) {\n    const i = newItems.findIndex((n, k) => !used.has(k) && !n.replaces && sameItem(n, o));\n    if (i >= 0) {\n      used.add(i);\n      const n = newItems[i];\n      if (Number(n.packets) !== Number(o.packets)) changes.push({ type: n.stock === 'limited' && n.packets < o.packets ? 'limited' : 'qty', old: o, item: n });\n      continue;\n    }\n    const reps = newItems.map((n, k) => [n, k]).filter(([n, k]) => !used.has(k) && n.replaces && norm(n.replaces) === norm(o.code));\n    if (reps.length) { for (const [n, k] of reps) { used.add(k); changes.push({ type: 'replaced', old: o, item: n }); } continue; }\n    const why = reasons[norm(o.code) + '|' + Number(o.dz)] || reasons[norm(o.code) + '|0'] || 'removed';\n    changes.push({ type: why, old: o });\n  }\n  newItems.forEach((n, k) => { if (!used.has(k)) changes.push({ type: 'added', item: n }); });\n  return changes;\n}\nfunction changeOrder(o, edit) {\n  const items = cleanItems(edit.items);\n  if (!items) return { error: 'Some item lines are not valid (packets must be whole numbers above 0).' };\n  if (!items.length) return { error: 'The order has no items left. Add at least one item.' };\n  const oldItems = itemsOf(o);\n  const changes = diff(oldItems, items, edit.removed);\n  let ship = shipOf(o);\n  if (edit.shipping !== undefined && edit.shipping !== null && edit.shipping !== '') {\n    const s = Number(edit.shipping);\n    if (!(s >= 0 && s < 1000000)) return { error: 'Shipping must be a number in ₹ (0 for free shipping).' };\n    ship = r2(s);\n  }\n  const handling = Number(o.handling) || 0;\n  const tot = totals(items, handling);\n  const note = clip(edit.note, 500);\n  const lang = langOf(o);\n  const stored = items.map((x) => { const y = Object.assign({}, x); delete y.stock; delete y.replaces; return y; });\n  const enLines = changes.map((c) => changeLine(L.en, c));\n  return { items: stored, changes, enLines, ship, handling, tot, note, lang, itemsChanged: changes.length > 0, shipChanged: ship !== shipOf(o) };\n}\n\n// ---- session ----\nconst tokenHash = b.token ? sha256('session:' + String(b.token)) : '';\nconst session = tokenHash ? sessions.find((s) => s.kind === 'session' && s.hash === tokenHash && Number(s.exp_ms) > nowMs) : null;\nconst PUBLIC = ['ping', 'request_code', 'verify_code'];\n\nif (!PUBLIC.includes(action) && !session) {\n  fail('login', 'Please log in again.');\n} else if (action === 'ping') {\n  reply({ crypto: cryptoMode, time: now });\n} else if (action === 'request_code') {\n  const codes = sessions.filter((s) => s.kind === 'otp');\n  const lastMs = Math.max(0, ...codes.map((s) => Number(s.created_ms) || 0));\n  const lastHour = codes.filter((s) => nowMs - (Number(s.created_ms) || 0) < 3600 * 1000).length;\n  if (nowMs - lastMs < 60 * 1000) fail('wait', 'A code was sent less than a minute ago. Please check WhatsApp, or wait a minute and try again.');\n  else if (lastHour >= CODES_PER_HOUR) fail('wait', 'Too many codes in the last hour. Please try again later.');\n  else if (!mahekWindowOpen()) fail('window', 'WhatsApp only lets the bot message you within 24 hours of your last message to it. Send \"hi\" to the bot on WhatsApp (+91 93227 02543), then tap \"Send code\" again.');\n  else {\n    const code = randomCode(), key = 'otp-' + randomHex(8);\n    out.rows.push({ key, kind: 'otp', hash: sha256(key + ':' + code), exp_ms: nowMs + CODE_MIN * 60 * 1000, tries: 0, created_ms: nowMs });\n    out.cleanup = true;\n    out.messages.push({ to: MAHEK, kind: 'code', payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: MAHEK, type: 'text', text: { preview_url: false, body: '🔐 Your Raj Creation orders login code is *' + code + '*\\n\\nIt works for ' + CODE_MIN + ' minutes. Never share it with anyone – Raj Creation will never ask you for it.' } } });\n    reply({ sent: true, to: '+91 •••••' + MAHEK.slice(-5), minutes: CODE_MIN });\n  }\n} else if (action === 'verify_code') {\n  const code = String(b.code || '').replace(/\\D/g, '');\n  const otp = sessions.filter((s) => s.kind === 'otp' && Number(s.exp_ms) > nowMs).sort((x, y) => (Number(y.created_ms) || 0) - (Number(x.created_ms) || 0))[0];\n  if (!otp) fail('expired', 'This code has expired or was already used. Tap \"Send code\" to get a new one.');\n  else if (code.length === 6 && sha256(otp.key + ':' + code) === otp.hash) {\n    const token = randomHex(32);\n    out.rows.push({ key: otp.key, kind: 'otp', hash: otp.hash, exp_ms: 0, tries: Number(otp.tries) || 0, created_ms: Number(otp.created_ms) || 0 });\n    out.rows.push({ key: 'ses-' + randomHex(8), kind: 'session', hash: sha256('session:' + token), exp_ms: nowMs + SESSION_DAYS * 864e5, tries: 0, created_ms: nowMs });\n    reply({ token, exp_ms: nowMs + SESSION_DAYS * 864e5 });\n  } else {\n    const tries = (Number(otp.tries) || 0) + 1;\n    const left = CODE_TRIES - tries;\n    out.rows.push({ key: otp.key, kind: 'otp', hash: otp.hash, exp_ms: left > 0 ? Number(otp.exp_ms) : 0, tries, created_ms: Number(otp.created_ms) || 0 });\n    fail('code', left > 0 ? 'Wrong code. ' + left + (left === 1 ? ' try' : ' tries') + ' left.' : 'Wrong code too many times. Tap \"Send code\" to get a new one.');\n  }\n} else if (action === 'logout') {\n  out.rows.push({ key: session.key, kind: 'session', hash: session.hash, exp_ms: 0, tries: 0, created_ms: Number(session.created_ms) || 0 });\n  reply({});\n} else if (action === 'list') {\n  const orders = recent.slice().sort((x, y) => (Number(y.created_ms) || 0) - (Number(x.created_ms) || 0)).map((o) => ({\n    order_id: o.order_id, name: o.name || '', shop: o.shop || '', city: o.city || '', phone: o.phone || '', status: o.status || 'new', level: o.level || '',\n    total: Number(o.total) || 0, grand_total: Number(o.grand_total) || 0, shipping: shipOf(o), packets: Number(o.packets) || 0, lines: itemsOf(o).length,\n    created_at: o.created_at || '', updated_at: o.updated_at || '', confirmed_at: o.confirmed_at || '', version: Number(o.version) || 1, needs_sales: o.needs_sales ? 1 : 0,\n  }));\n  reply({ orders, session_exp_ms: Number(session.exp_ms) });\n} else if (!thisOrder) {\n  fail('missing', 'Order ' + clip(b.order_id, 30) + ' was not found.');\n} else if (action === 'get') {\n  reply({ order: orderOut(thisOrder), customer: { name: (customer && customer.whatsapp_name) || '', last_in_at: (customer && customer.last_in_at) || '', window_open: windowOpen(customer), paused: !!(customer && parseT(customer.paused_until) && parseT(customer.paused_until) > nowDt) }, template_ok: !!(tpl.update && tpl.update.status === 'APPROVED') });\n} else if (['preview', 'save'].includes(action)) {\n  const o = thisOrder;\n  const ch = changeOrder(o, b);\n  const confirm = !!b.confirm;\n  const notify = !!b.notify && ch.itemsChanged;\n  const open = windowOpen(customer);\n  const tname = tpl.update && tpl.update.status === 'APPROVED' ? tpl.update.name : '';\n  const how = !notify ? 'none' : open ? 'message' : tname ? 'template' : 'manual';\n  if (ch.error) fail('invalid', ch.error);\n  else if (Number(b.version) !== (Number(o.version) || 1)) fail('changed', 'This order was changed (by the customer or in WhatsApp) after you opened it. It has been reloaded – please make your changes again.', { order: orderOut(o) });\n  else if (confirm && ch.ship < 0) fail('invalid', 'Please enter the shipping cost (0 for free shipping) before confirming.');\n  else if (!confirm && !ch.itemsChanged && !ch.shipChanged) fail('nothing', 'Nothing was changed.');\n  else {\n    const text = notify ? customerMessage(o, ch.changes, ch.tot, ch.ship, ch.note, ch.lang) : '';\n    const textEn = notify ? customerMessage(o, ch.changes, ch.tot, ch.ship, ch.note, 'en') : '';\n    const grand = ch.ship >= 0 ? r2(ch.tot.total + ch.ship) : 0;\n    if (action === 'preview') {\n      reply({ how, message: text, message_en: ch.lang === 'en' ? '' : textEn, changes: ch.enLines, totals: Object.assign({}, ch.tot, { handling: ch.handling, shipping: ch.ship, grand_total: grand }), window_open: open });\n    } else {\n      const stamp = 'Changed by Mahek on the website ' + now + ': ' + (ch.enLines.join('; ') || (ch.shipChanged ? 'shipping ' + inr2(ch.ship) : 'confirmed'));\n      const upd = Object.assign({}, o, {\n        items: JSON.stringify(ch.items), lines_text: ch.items.map(lineFull).join('\\n'), packets: ch.tot.packets, dozens: ch.tot.dozens,\n        items_total: ch.tot.items_total, handling: ch.handling, gst: ch.tot.gst, total: ch.tot.total, shipping: ch.ship, grand_total: grand,\n        updated_at: now, version: (Number(o.version) || 1) + (ch.itemsChanged ? 1 : 0),\n        note: clip((ch.itemsChanged || ch.shipChanged ? stamp + (o.note ? ' | ' + o.note : '') : o.note || ''), 2000),\n      });\n      if (confirm) Object.assign(upd, { status: 'confirmed', confirmed_at: now, confirm_count: (Number(o.confirm_count) || 0) + 1 });\n      delete upd.id; delete upd.createdAt; delete upd.updatedAt;\n      out.order_update = upd;\n      if (how === 'message') out.messages.push({ to: o.phone, kind: 'update', payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: o.phone, type: 'text', text: { preview_url: false, body: text.slice(0, 4096) } } });\n      else if (how === 'template') {\n        const p = (s, n) => clip(String(s).replace(/[\\n\\t]+/g, ' ').replace(/ {4,}/g, '   '), n);\n        out.messages.push({ to: o.phone, kind: 'update', payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: o.phone, type: 'template', template: { name: tname, language: { code: 'en_US' }, components: [{ type: 'body', parameters: [\n          { type: 'text', text: p((customer && customer.whatsapp_name) || o.name || 'there', 60) },\n          { type: 'text', text: p(o.order_id, 30) },\n          { type: 'text', text: p(ch.enLines.join('; ') + (ch.note ? '. Note: ' + ch.note : ''), 700) },\n          { type: 'text', text: p(inr2(ch.tot.total) + ' incl. GST' + (ch.ship > 0 ? ' + shipping ' + inr2(ch.ship) : ch.ship === 0 ? ', free shipping' : ''), 80) },\n        ] }] } } });\n      } else if (how === 'manual') out.manual = { url: 'https://wa.me/' + o.phone + '?text=' + encodeURIComponent(text), message: text };\n      if (confirm) {\n        out.confirm = { mode: 'confirm', order: upd, customer: { phone: o.phone, name: (customer && customer.whatsapp_name) || o.name || '', last_in_at: (customer && customer.last_in_at) || '', lang: ch.lang } };\n      }\n      reply({ how, message: text, manual: out.manual, order: orderOut(upd), confirmed: confirm });\n    }\n  }\n} else {\n  fail('action', 'Unknown action.');\n}\nreturn [{ json: out }];\n"
+      }
+    },
+    {
+      "id": "0953ef9d-00ee-4ee3-969f-762a85fdb5ca",
+      "name": "Login Rows?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Handle').first().json.rows.length > 0 }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "0f9629bd-b687-4e1d-bfa4-1a2f9605c41f",
+      "name": "Login Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// One item per login row to save (new code, wrong try, used code, new session, logout).\nreturn $('Handle').first().json.rows.map((r) => ({ json: r }));\n"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "4c815ab1-d8b8-4662-9042-485970e6330f",
+      "name": "Save Login Rows",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "TY8Qd8CziSDgu1HD",
+          "cachedResultName": "RC Portal Sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "={{ $json.key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key": "={{ $json.key }}",
+            "kind": "={{ $json.kind }}",
+            "hash": "={{ $json.hash }}",
+            "exp_ms": "={{ $json.exp_ms }}",
+            "tries": "={{ $json.tries }}",
+            "created_ms": "={{ $json.created_ms }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "key",
+              "displayName": "key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kind",
+              "displayName": "kind",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hash",
+              "displayName": "hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "exp_ms",
+              "displayName": "exp_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tries",
+              "displayName": "tries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_ms",
+              "displayName": "created_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "f0bd684b-a5b6-4eb3-9c81-00783cf46bc1",
+      "name": "Clean Up?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2688,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Handle').first().json.cleanup }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "a656aa15-a0e6-4c98-8b73-eec68eac97b7",
+      "name": "Delete Old Login Rows",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2912,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "TY8Qd8CziSDgu1HD",
+          "cachedResultName": "RC Portal Sessions"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "exp_ms",
+              "condition": "lt",
+              "keyValue": "={{ Date.now() - 86400000 }}"
+            },
+            {
+              "keyName": "created_ms",
+              "condition": "lt",
+              "keyValue": "={{ Date.now() - 86400000 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "7831451a-5ef0-4b5a-973f-e7914ac12415",
+      "name": "Save Order?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3136,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$('Handle').first().json.order_update }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "74823b24-b3b0-4a3f-91f3-25991dc0e06a",
+      "name": "Save Order",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "ZZ0zE7NyHqyoJ971",
+          "cachedResultName": "RC Orders"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "order_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Handle').first().json.order_update.order_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "order_id": "={{ $('Handle').first().json.order_update.order_id || '' }}",
+            "phone": "={{ $('Handle').first().json.order_update.phone || '' }}",
+            "name": "={{ $('Handle').first().json.order_update.name || '' }}",
+            "shop": "={{ $('Handle').first().json.order_update.shop || '' }}",
+            "city": "={{ $('Handle').first().json.order_update.city || '' }}",
+            "btype": "={{ $('Handle').first().json.order_update.btype || '' }}",
+            "level": "={{ $('Handle').first().json.order_update.level || '' }}",
+            "lang": "={{ $('Handle').first().json.order_update.lang || '' }}",
+            "items": "={{ $('Handle').first().json.order_update.items || '' }}",
+            "lines_text": "={{ $('Handle').first().json.order_update.lines_text || '' }}",
+            "packets": "={{ Number($('Handle').first().json.order_update.packets) || 0 }}",
+            "dozens": "={{ Number($('Handle').first().json.order_update.dozens) || 0 }}",
+            "items_total": "={{ Number($('Handle').first().json.order_update.items_total) || 0 }}",
+            "handling": "={{ Number($('Handle').first().json.order_update.handling) || 0 }}",
+            "gst": "={{ Number($('Handle').first().json.order_update.gst) || 0 }}",
+            "total": "={{ Number($('Handle').first().json.order_update.total) || 0 }}",
+            "shipping": "={{ $('Handle').first().json.order_update.shipping === undefined || $('Handle').first().json.order_update.shipping === null || $('Handle').first().json.order_update.shipping === '' ? -1 : Number($('Handle').first().json.order_update.shipping) }}",
+            "grand_total": "={{ Number($('Handle').first().json.order_update.grand_total) || 0 }}",
+            "status": "={{ $('Handle').first().json.order_update.status || '' }}",
+            "version": "={{ Number($('Handle').first().json.order_update.version) || 1 }}",
+            "needs_sales": "={{ $('Handle').first().json.order_update.needs_sales || '' }}",
+            "created_at": "={{ $('Handle').first().json.order_update.created_at || '' }}",
+            "updated_at": "={{ $('Handle').first().json.order_update.updated_at || '' }}",
+            "confirmed_at": "={{ $('Handle').first().json.order_update.confirmed_at || '' }}",
+            "pdf_sent_at": "={{ $('Handle').first().json.order_update.pdf_sent_at || '' }}",
+            "note": "={{ $('Handle').first().json.order_update.note || '' }}",
+            "created_ms": "={{ Number($('Handle').first().json.order_update.created_ms) || 0 }}",
+            "confirm_count": "={{ Number($('Handle').first().json.order_update.confirm_count) || 0 }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "shop",
+              "displayName": "shop",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "btype",
+              "displayName": "btype",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lang",
+              "displayName": "lang",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "items",
+              "displayName": "items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lines_text",
+              "displayName": "lines_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "packets",
+              "displayName": "packets",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dozens",
+              "displayName": "dozens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "items_total",
+              "displayName": "items_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "handling",
+              "displayName": "handling",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gst",
+              "displayName": "gst",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "shipping",
+              "displayName": "shipping",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "grand_total",
+              "displayName": "grand_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version",
+              "displayName": "version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "needs_sales",
+              "displayName": "needs_sales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confirmed_at",
+              "displayName": "confirmed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pdf_sent_at",
+              "displayName": "pdf_sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "note",
+              "displayName": "note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_ms",
+              "displayName": "created_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confirm_count",
+              "displayName": "confirm_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "40b12c48-937f-4f68-9252-4b0ee812def5",
+      "name": "Orders Sheet Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// One row of the \"Orders\" tab in the leads sheet.\nconst o = $('Handle').first().json.order_update;\nconst LANGS = { hi: 'Hindi', gu: 'Gujarati', ta: 'Tamil', te: 'Telugu', en: 'English' };\nconst ship = Number(o.shipping);\nreturn [{ json: {\n  'Order ID': o.order_id,\n  'Status': o.status === 'confirmed' ? 'Confirmed' : o.status === 'updated' ? 'Updated by customer' : o.status === 'cancelled' ? 'Cancelled' : 'New',\n  'Order date': o.created_at || '',\n  'Customer': o.name || '',\n  'Phone': o.phone ? '+' + o.phone : '',\n  'Shop': o.shop || '',\n  'City': o.city || '',\n  'Business type': o.btype || '',\n  'Price level': o.level || '',\n  'Language': LANGS[o.lang] || o.lang || '',\n  'Items': o.lines_text || '',\n  'Packets / boxes': o.packets,\n  'Dozens': o.dozens,\n  'Items total': o.items_total,\n  'Handling': o.handling || 0,\n  'GST': o.gst,\n  'Total incl. GST': o.total,\n  'Shipping': ship >= 0 ? ship : 'not set',\n  'Grand total': o.grand_total || '',\n  'Confirmed at': o.confirmed_at || '',\n  'PDF sent at': o.pdf_sent_at || '',\n  'Updated at': o.updated_at || '',\n  'Version': o.version || 1,\n  'Notes': o.note || '',\n  'Chat': o.phone ? 'https://wa.me/' + o.phone : '',\n} }];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "a8adf559-5da2-43ff-b786-f8280655fe1a",
+      "name": "Update Orders Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3808,
+        0
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1W4jmnP3XUVXk7EimIOOjTx4GcfaqHiUAXnaM1bsGiHE/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Orders"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Order ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "niAxCR2tItJiqkef",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "85172270-efaa-4243-be4f-8d0f8b909073",
+      "name": "Send Messages?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4032,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Handle').first().json.messages.length > 0 }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "7923cecb-d52b-43de-b202-df4cd56f0a62",
+      "name": "Messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4256,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// One item per WhatsApp message: the login code for Mahek, or the order update for the customer.\nreturn $('Handle').first().json.messages.map((m) => ({ json: m }));\n"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "344e34fb-116c-41f5-b9d5-7aa840c0b39f",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4480,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/1342683025589974/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 0
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "alwaysOutputData": true,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "id": "ee2f7093-1cf7-4e3f-9106-b172e2fa86be",
+      "name": "Confirm Order?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4704,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$('Handle').first().json.confirm }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "0cbe42aa-bec0-4b92-9e47-dfead234529d",
+      "name": "Make & Send PDF",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        4928,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "GRNIiSkeZsOmXYGV"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mode": "={{ $('Handle').first().json.confirm.mode }}",
+            "order": "={{ $('Handle').first().json.confirm.order }}",
+            "customer": "={{ $('Handle').first().json.confirm.customer }}",
+            "phone_number_id": "={{ '1342683025589974' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order",
+              "displayName": "order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone_number_id",
+              "displayName": "phone_number_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "a4084dab-40da-416e-9925-1ae131a1ba07",
+      "name": "Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5152,
+        80
+      ],
+      "parameters": {
+        "jsCode": "// What the page gets back. Adds the WhatsApp send results to the answer from \"Handle\".\nconst h = $('Handle').first().json;\nconst res = Object.assign({}, h.response || { ok: false, error: 'server', message: 'No answer.' });\nconst msgs = h.messages || [];\nif (msgs.length) {\n  let sent = [];\n  try { sent = $('Send WhatsApp').all().map((i) => i.json || {}); } catch (e) { sent = []; }\n  const results = msgs.map((m, i) => {\n    const r = sent[i] || {};\n    const id = r.messages && r.messages[0] && r.messages[0].id;\n    const er = r.error ? (r.error.error_data && r.error.error_data.details) || r.error.message || JSON.stringify(r.error) : 'no answer from WhatsApp';\n    return { kind: m.kind, ok: !!id, error: id ? '' : String(er).slice(0, 300) };\n  });\n  const code = results.find((r) => r.kind === 'code');\n  if (code && !code.ok) {\n    Object.assign(res, { ok: false, error: 'send', message: 'Could not send the code on WhatsApp (' + code.error + '). Send \"hi\" to the bot on WhatsApp, then try again.' });\n    delete res.sent; delete res.to;\n  }\n  const upd = results.find((r) => r.kind === 'update');\n  if (upd) {\n    res.sent = upd.ok;\n    if (!upd.ok) {\n      res.send_error = upd.error;\n      const o = res.order || {};\n      if (res.message && o.phone) res.manual = { url: 'https://wa.me/' + o.phone + '?text=' + encodeURIComponent(res.message), message: res.message };\n    }\n  }\n}\nreturn [{ json: res }];\n"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "cd4534bc-131f-441f-acd2-018d11a0d5e7",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        5376,
+        80
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "d3978865-0c11-4922-883f-59b1d786d364",
+      "name": "Read request and data",
+      "nodeNames": [
+        "Request",
+        "Sessions",
+        "Admin State",
+        "Recent Orders",
+        "This Order",
+        "Customer",
+        "Template Names",
+        "Handle"
+      ],
+      "description": "Parses the page's request and reads login rows, Mahek's chat state, orders, the customer and template names; Handle decides what to do."
+    },
+    {
+      "id": "ec0c2cd5-cb9a-4b9a-ae13-07ad90441a9e",
+      "name": "Answer the page",
+      "nodeNames": [
+        "Reply",
+        "Respond"
+      ],
+      "description": "Builds the JSON answer (adds WhatsApp send results) and returns it to rajcreation.info/orders/."
+    }
+  ],
+  "activeVersion": {
+    "sameAsDraft": true
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

@@ -365,6 +365,8 @@ def render_pages(catalogue, fill):
              ogimage=c["items"][0]["imgs"][0]["f"], page="category", cat=c["id"], catname=c["name"], tagline=c["tagline"],
              grid=fill.get("grid_" + c["id"], ""),
              robots="index,follow")
+    page("orders.html", OUT / "orders" / "index.html", portal_api=config.PORTAL_API, price_token=config.PRICE_TOKEN,
+         types=json.dumps(config.BUSINESS_TYPES), gst=config.GST_PCT)
     page("rates.html", OUT / "p" / config.PRICE_TOKEN / "index.html",
          title="Rate List – Raj Creation", description="Raj Creation wholesale rate list.",
          ogimage=catalogue["categories"][0]["items"][0]["imgs"][0]["f"], page="rates", cat="", robots="noindex,nofollow")
@@ -396,14 +398,14 @@ def main():
     minify(SRC / "assets" / "style.css", HERE / "_style.min.css")
     css = (HERE / "_style.min.css").read_text(encoding="utf8").strip()
     (HERE / "_style.min.css").unlink()
-    for name in ("app.js", "i18n.js"):
+    for name in ("app.js", "i18n.js", "orders.js"):
         minify(SRC / "assets" / name, OUT / "assets" / name)
     shutil.copytree(SRC / "assets" / "fonts", OUT / "assets" / "fonts", dirs_exist_ok=True)
     fill = prerender(catalogue, i18n_en(), nav)
     fill["css"] = css
     for key, path in (("v_app", "assets/app.js"), ("v_i18n", "assets/i18n.js"), ("v_logo", "assets/logo-mark.webp"),
                       ("v_inter", "assets/fonts/inter-latin.woff2"), ("v_rupee", "assets/fonts/inter-rupee.woff2"),
-                      ("v_playfair", "assets/fonts/playfair-latin.woff2")):
+                      ("v_playfair", "assets/fonts/playfair-latin.woff2"), ("v_orders", "assets/orders.js")):
         fill[key] = ver(OUT / path)
     for name in (".htaccess", "robots.txt", "404.html"):
         if (SRC / name).exists():

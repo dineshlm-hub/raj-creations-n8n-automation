@@ -11,6 +11,10 @@ PRICE_TOKEN = "rl-7qk4x9m2"
 # While empty, the site uses the prices from "Website Rates (for Google Sheet).xlsx" at build time.
 RATES_CSV_URL = "https://docs.google.com/spreadsheets/d/1a1nFUrQZUjyx6uZYUQUAbxShWa-fzaKtTPakG3Z1WKM/gviz/tq?tqx=out:csv&sheet=Rates"
 
+# Mahek's order page (rajcreation.info/orders/) talks to this n8n webhook (workflow "RC - Order Portal").
+# The page itself holds no secrets: Mahek logs in with a one-time code sent to her WhatsApp.
+PORTAL_API = "https://gadaironman.app.n8n.cloud/webhook/rc-portal"
+
 BOT_WHATSAPP = "919322702543"   # orders and the WhatsApp button go to the bot number
 PHONE_DISPLAY = "+91 91122 96139"
 

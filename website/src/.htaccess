@@ -61,9 +61,9 @@ AddType font/woff2 .woff2
   </IfModule>
 </Files>
 
-# Keep the rate-list pages out of search engines
+# Keep the rate-list pages and the order page out of search engines
 <IfModule mod_headers.c>
-  <If "%{REQUEST_URI} =~ m#^/p/#">
+  <If "%{REQUEST_URI} =~ m#^/(p|orders)/#">
     Header set X-Robots-Tag "noindex, nofollow"
   </If>
   Header always set X-Content-Type-Options "nosniff"
