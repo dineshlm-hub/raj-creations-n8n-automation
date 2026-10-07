@@ -1,4 +1,4 @@
-/* Raj Creations catalogue – search, photo viewer, rate list and order cart, in 4 languages. No dependencies. */
+/* Raj Creation catalogue – search, photo viewer, rate list and order cart, in 4 languages. No dependencies. */
 (() => {
   'use strict';
 

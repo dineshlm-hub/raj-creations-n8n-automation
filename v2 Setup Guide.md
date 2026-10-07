@@ -178,7 +178,17 @@ If the customer's 24-hour window is closed, they get the `rc_order_confirmed` te
 
 ---
 
-## What changed on 7 Oct 2026
+## Later on 7 Oct 2026
+
+1. **The bot never pauses itself.** It keeps replying after a handoff, a website order or a big order. Only Mahek pauses a customer (Pause bot button, or `pause` in her console), and it stays paused until she taps **Resume bot** or for 30 days. If a customer sends another message the bot can't handle within 30 minutes of an alert, it is only logged, so neither the customer nor Mahek gets the same message twice.
+2. **New customers always get a reply.** A number that wasn't in the RC Customers table yet stopped the run before the bot could answer. Fixed.
+3. **Company name is Raj Creation** (not "Raj Creations") in every bot message in all five languages, Mahek's console and alerts, the PDF file names and the website.
+4. **Order confirmation PDF:** says it is only a reference receipt and that the official receipt is given separately. Its logo now reads "RAJ CREATION". The bot downloads that logo from the website, so it shows only after the updated website is uploaded.
+5. **Welcome message:** the bun donuts line uses 💇‍♀️ instead of 🍩.
+
+The approved WhatsApp templates (alerts to Mahek, order confirmed) still say "Raj Creations": Meta has to approve any change to their wording.
+
+## What changed earlier on 7 Oct 2026
 
 1. **Why alerts stopped:** Meta accepted the alert templates but then failed them with error **131042** ("Business eligibility payment issue"). The bot's WhatsApp account has no tax or payment details since AiSensy was removed. Fix it in **Meta Business → Billing hub**. Until then, alerts only reach Mahek inside her 24-hour window.
 2. **Failed deliveries are caught:** when Meta reports that a message failed, the bot resends it as a normal message where it can, and logs it in the **RC Alert Log** data table.
@@ -215,7 +225,7 @@ If the customer's 24-hour window is closed, they get the `rc_order_confirmed` te
    - Voice notes, documents, videos, locations, contact cards and cart orders: the customer gets a thank-you and Mahek gets an alert.
    - Reactions and stickers: ignored.
 6. **Less spam:**
-   - After a handoff, the bot stays quiet for that customer for 24 h. It still logs their messages and sends Mahek at most one follow-up alert every 30 minutes.
+   - After a handoff, Mahek gets at most one follow-up alert every 30 minutes. (Until 7 Oct 2026 the bot also went quiet for 24 h after a handoff; now only Mahek pauses it.)
    - Small talk like "ok thanks" or "ji sir" doesn't trigger a handoff.
    - The customer message now says "They will contact you shortly" (no more "here", since Mahek replies from her own phone).
 7. **Duplicates and bursts:**
@@ -230,8 +240,7 @@ If the customer's 24-hour window is closed, they get the `rc_order_confirmed` te
 
 These are at the top of the **Build Context** node:
 
-- `HANDOFF_PAUSE_HOURS = 24`
-- `ADMIN_PAUSE_DAYS = 30`
+- `ADMIN_PAUSE_DAYS = 30` (how long Mahek's pause lasts if she doesn't resume)
 - `ALERT_COOLDOWN_MIN = 30`
 - `BIG_ORDER = 10000`
 - `MOQ = 5000`

@@ -67,7 +67,7 @@ def render_images(force):
 
 
 def render_logo():
-    """Crop the Raj Creations logo from the top-left of the first clutchers page."""
+    """Crop the Raj Creation logo from the top-left of the first clutchers page."""
     out = OUT / "assets" / "logo.webp"
     if out.exists():
         return
@@ -93,6 +93,41 @@ def render_logo_mark():
     out = OUT / "assets" / "logo-mark.webp"
     if out.exists():
         return
+    img = monogram()
+    img.thumbnail((104, 90), Image.LANCZOS)  # shown about 52 x 42 px: twice that is sharp on phones
+    img.save(out, "WEBP", quality=82, method=6)
+
+
+def render_logo_pdf():
+    """Logo for the bot's PDF order confirmation: the RC monogram with the name set underneath
+    (the catalogue logo spells the name "Raj Creations"; the company name is "Raj Creation")."""
+    from PIL import ImageDraw, ImageFont
+    out = OUT / "assets" / "logo-pdf.jpg"
+    mark = monogram()
+    mark.thumbnail((400, 230), Image.LANCZOS)
+    font = ImageFont.truetype(str(SRC / "assets" / "fonts" / "playfair-latin.woff2"), 62)
+    font.set_variation_by_name("SemiBold")
+    name, spacing, ink = "RAJ CREATION", 6, (0x24, 0x1c, 0x22)
+    widths = [font.getlength(ch) for ch in name]
+    text_w = sum(widths) + spacing * (len(name) - 1)
+    pad, gap, text_h = 24, 22, 62
+    w = round(max(mark.width, text_w) + 2 * pad)
+    h = pad + mark.height + gap + text_h + 18 + pad
+    im = Image.new("RGB", (w, h), (255, 255, 255))
+    im.paste(mark, ((w - mark.width) // 2, pad), mark)
+    d = ImageDraw.Draw(im)
+    x, y = (w - text_w) / 2, pad + mark.height + gap
+    for ch, cw in zip(name, widths):
+        d.text((x, y), ch, font=font, fill=ink)
+        x += cw + spacing
+    line_y = y + text_h + 10
+    d.line(((w - text_w) / 2, line_y, (w + text_w) / 2, line_y), fill=ink, width=3)
+    im.save(out, "JPEG", quality=90)
+    return out
+
+
+def monogram():
+    """The RC monogram cut out of the catalogue logo at full resolution (RGBA, ink on transparent)."""
     import numpy as np
     from scipy import ndimage
     doc = pymupdf.open(ROOT / CATEGORIES[0]["pdf"])
@@ -122,9 +157,7 @@ def render_logo_mark():
     rgba = np.zeros(mark.shape + (4,), dtype=np.uint8)
     rgba[..., 0], rgba[..., 1], rgba[..., 2] = 0x24, 0x1c, 0x22
     rgba[..., 3] = (mark * 255).astype(np.uint8)
-    img = Image.fromarray(rgba, "RGBA")
-    img.thumbnail((104, 90), Image.LANCZOS)  # shown about 52 x 42 px: twice that is sharp on phones
-    img.save(out, "WEBP", quality=82, method=6)
+    return Image.fromarray(rgba, "RGBA")
 
 
 def build_catalogue(sizes):
@@ -204,8 +237,7 @@ def render_pdf_photos(catalogue):
         if link and link in photos:
             for k in keys(r.get("Code", "")):
                 photos.setdefault(k, photos[link])
-    logo = OUT / "assets" / "logo-pdf.jpg"
-    Image.open(OUT / "assets" / "logo.webp").convert("RGB").save(logo, "JPEG", quality=90)
+    logo = render_logo_pdf()
     return {"logo": f"assets/logo-pdf.jpg?v={ver(logo)}", "photos": photos}
 
 
@@ -323,18 +355,18 @@ def render_pages(catalogue, fill):
         out_path.write_text(html, encoding="utf8")
 
     page("index.html", OUT / "index.html",
-         title="Raj Creations – Wholesale Hair Accessories",
+         title="Raj Creation – Wholesale Hair Accessories",
          description="Manufacturer & wholesaler of claw clips, scrunchies, rubber bands, bun donuts and hair tie bows. Browse the catalogue and search any item code.",
          ogimage=catalogue["categories"][1]["items"][2]["imgs"][0]["f"], page="home", cat="", robots="index,follow")
     for c in catalogue["categories"]:
         page("category.html", OUT / c["id"] / "index.html",
-             title=f"{c['name']} – Raj Creations Catalogue",
-             description=f"{c['tagline']}. Wholesale catalogue with item codes – Raj Creations.",
+             title=f"{c['name']} – Raj Creation Catalogue",
+             description=f"{c['tagline']}. Wholesale catalogue with item codes – Raj Creation.",
              ogimage=c["items"][0]["imgs"][0]["f"], page="category", cat=c["id"], catname=c["name"], tagline=c["tagline"],
              grid=fill.get("grid_" + c["id"], ""),
              robots="index,follow")
     page("rates.html", OUT / "p" / config.PRICE_TOKEN / "index.html",
-         title="Rate List – Raj Creations", description="Raj Creations wholesale rate list.",
+         title="Rate List – Raj Creation", description="Raj Creation wholesale rate list.",
          ogimage=catalogue["categories"][0]["items"][0]["imgs"][0]["f"], page="rates", cat="", robots="noindex,nofollow")
 
 

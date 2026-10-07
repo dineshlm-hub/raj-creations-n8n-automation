@@ -1,4 +1,4 @@
-/* Raj Creations – website texts in English, Hindi, Gujarati, Tamil and Telugu.
+/* Raj Creation – website texts in English, Hindi, Gujarati, Tamil and Telugu.
    {name} placeholders are filled in by app.js. Item codes and the WhatsApp order message stay in English. */
 window.RC_I18N = {
   languages: [
