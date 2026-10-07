@@ -1,0 +1,38 @@
+<a class="skip-link" href="#main" data-i18n="a11y.skip">Skip to content</a>
+<header class="site-header">
+  <div class="bar wrap">
+    <a class="brand" href="{{base}}" aria-label="Raj Creations home">
+      <img src="{{base}}assets/logo-mark.webp?v={{v_logo}}" alt="" width="104" height="85">
+      <span class="brand-text"><b>Raj Creations</b><small data-i18n="brand.tag">Hair accessories · Wholesale</small></span>
+    </a>
+    <nav class="cat-nav" aria-label="Categories">
+      <a href="{{base}}clutchers/" data-cat="clutchers"><img class="nav-ic" src="{{base}}{{nav_clutchers}}" alt="" width="26" height="26"><span data-i18n="nav.clutchers">Clutchers</span></a>
+      <a href="{{base}}scrunchies/" data-cat="scrunchies"><img class="nav-ic" src="{{base}}{{nav_scrunchies}}" alt="" width="26" height="26"><span data-i18n="nav.scrunchies">Scrunchies &amp; Bands</span></a>
+      <a href="{{base}}tie-bow/" data-cat="tie-bow"><img class="nav-ic" src="{{base}}{{nav_tiebow}}" alt="" width="26" height="26"><span data-i18n="nav.tiebow">Tie Bows</span></a>
+      <a href="#" class="rates-link" hidden data-i18n="nav.rates">Rate list</a>
+    </nav>
+    <label class="lang-pick">
+      <span class="sr-only" data-i18n="lang.label">Language</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <select id="lang" aria-label="Language">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="gu">ગુજરાતી</option>
+        <option value="ta">தமிழ்</option>
+        <option value="te">తెలుగు</option>
+      </select>
+    </label>
+    <button class="cart-btn" type="button" hidden aria-label="Open your order">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12L5 3H2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+      <span class="cart-count" hidden>0</span>
+    </button>
+  </div>
+  <div class="search-row wrap">
+    <label class="search" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Search item code, e.g. D-01 or 432" data-i18n-ph="search.ph" aria-label="Search item code">
+      <button class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
+    </label>
+    <div class="results" id="results" role="listbox" hidden></div>
+  </div>
+</header>

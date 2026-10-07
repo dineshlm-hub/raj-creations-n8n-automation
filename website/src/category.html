@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{head}}
+</head>
+<body data-page="{{page}}" data-cat="{{cat}}" data-base="{{base}}">
+{{header}}
+<main id="main" class="wrap" tabindex="-1">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="{{base}}" data-i18n="crumbs.home">Home</a> <span aria-hidden="true">/</span> <span data-cat-name>{{catname}}</span></nav>
+  <div class="page-head">
+    <h1 data-cat-name>{{catname}}</h1>
+    <p class="lede"><span data-cat-tagline>{{tagline}}</span>. <span data-i18n="cat.tap">Tap any item to see all photos.</span></p>
+  </div>
+  <div class="level-note" id="level-note" hidden></div>
+  <div class="grid" id="grid">{{grid}}</div>
+  <section class="price-cta" id="price-cta">
+    <div>
+      <h2 data-i18n="catcta.title">Want prices for these items?</h2>
+      <p data-i18n="catcta.text">Message us on WhatsApp and we'll send you the rate list link.</p>
+    </div>
+    <a class="btn primary wa-link" href="#" data-wa="Hi, please share the rate list for {{catname}}." data-i18n="cta.btn">Get rates on WhatsApp</a>
+  </section>
+</main>
+{{footer}}
+</body>
+</html>

@@ -1,0 +1,1238 @@
+{
+  "name": "Raj Creations - WhatsApp Lead Funnel",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "id": "d9b6ca15-f8b9-4b80-9326-354ca5431e3a",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "d5eb2b01-a24f-41b1-a6cb-5dbab4f71085",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "9zYvJptrfI3U4dBj",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.messages ? $json.messages[0].from : \"\" }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b5818112-3166-4af3-aeba-fb8eb94cf71c",
+      "name": "Only Customer Messages",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        272,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1W4jmnP3XUVXk7EimIOOjTx4GcfaqHiUAXnaM1bsGiHE/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "phone",
+              "lookupValue": "={{ $json.messages[0].from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "91eda748-b816-4816-b2dc-928c6508e593",
+      "name": "Lookup Customer",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        128
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "niAxCR2tItJiqkef",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const trig = $('WhatsApp Trigger').first().json;\nconst msg = (trig.messages || [])[0] || {};\nconst contact = (trig.contacts || [])[0] || {};\nconst rows = $input.all().map(i => i.json).filter(r => r && r.phone);\nconst existing = rows[0] || {};\nconst phone = String(msg.from || '');\nconst type = msg.type || 'unknown';\n\nlet text = '';\nlet replyId = '';\nif (type === 'text') text = (msg.text && msg.text.body) || '';\nelse if (type === 'interactive') {\n  const it = msg.interactive || {};\n  text = (it.list_reply && it.list_reply.title) || (it.button_reply && it.button_reply.title) || '';\n  replyId = (it.list_reply && it.list_reply.id) || (it.button_reply && it.button_reply.id) || '';\n} else if (type === 'button') text = (msg.button && msg.button.text) || '';\nelse if (type === 'image') text = (msg.image && msg.image.caption) || '';\ntext = String(text).trim();\n\nconst fullStage = String(existing.stage || '').trim();\nconst pm = fullStage.match(/^(hi|ta|te|en):/);\nlet lang = pm ? pm[1] : 'en';\nconst rawStage = fullStage.replace(/^(hi|ta|te|en):/, '');\nconst stage = rawStage.split('#')[0];\nconst tries = parseInt(rawStage.split('#')[1] || '0', 10) || 0;\nconst lower = text.toLowerCase();\nconst wantsHuman = /\\b(human|person|agent|executive|representative|sales|associate|associative|staff|owner|manager|someone|call me|call back|callback|talk|speak|baat)\\b/.test(lower);\nconst wantsInfo = /\\b(more info|info|information|details|detail|explain|help|query|question|doubt|confused|confusing|samajh)\\b|not understand|don'?t understand|didn'?t understand|\\?/.test(lower);\nconst wantsHumanHi = /(बात|इंसान|सेल्स|कॉल|फोन|मैनेजर|मालिक|एजेंट|किसी से|பேச|மனிதர்|கால்|போன்|அழைக்க|மேனேஜர்|మాట్లాడ|మనిషి|కాల్|ఫోన్|మేనేజర్)/.test(text);\nconst wantsInfoHi = /(जानकारी|मदद|समझ|सवाल|डिटेल|बताइए|बताओ|क्या है|कैसे|உதவி|விவரம்|சந்தேகம்|புரியவில்லை|எப்படி|సహాయం|వివరాలు|సందేహం|అర్థం కాలేదు|ఎలా)/.test(text);\nconst fillerWords = ['नमस्ते', 'हाँ', 'हां', 'ठीक है', 'धन्यवाद', 'ओके', 'जी', 'வணக்கம்', 'சரி', 'நன்றி', 'ஓகே', 'ஆம்', 'ஆமாம்', 'నమస్తే', 'నమస్కారం', 'సరే', 'ధన్యవాదాలు', 'ఓకే', 'అవును', 'ok', 'okay', 'k', 'thanks', 'thank you', 'thankyou', 'yes', 'no', 'hi', 'hello', 'done', 'fine', 'great', 'nice'];\nconst now = $now.setZone('Asia/Kolkata').toFormat('yyyy-MM-dd HH:mm:ss');\n\nfunction parseAmount(s) {\n  const t = String(s).replace(/[०-९]/g, d => String('०१२३४५६७८९'.indexOf(d))).toLowerCase().replace(/,/g, '').replace(/₹|rs\\.?|inr|rupees?/g, ' ');\n  const m = t.match(/(\\d+(?:\\.\\d+)?)\\s*(k|thousand|lakh|lac|l)?\\b/);\n  if (!m) return null;\n  let n = parseFloat(m[1]);\n  const u = m[2];\n  if (u === 'k' || u === 'thousand') n *= 1000;\n  if (u === 'l' || u === 'lakh' || u === 'lac') n *= 100000;\n  return n;\n}\n\nfunction appendItems(prev, add) {\n  if (!add) return prev || '';\n  return prev ? prev + ' | ' + add : add;\n}\n\nconst rec = {\n  phone: phone,\n  whatsapp_name: (contact.profile && contact.profile.name) || existing.whatsapp_name || '',\n  business_details: existing.business_details || '',\n  category: existing.category || '',\n  interested_items: existing.interested_items || '',\n  order_value: existing.order_value || '',\n  order_photo: existing.order_photo || '',\n  first_contact: existing.first_contact || now,\n};\n\nlet route = 'done';\nlet newStage = rawStage;\nlet handoffReason = '';\nfunction retryOrHandoff(retryRoute) {\n  if (tries + 1 >= 2) {\n    route = 'handoff';\n    handoffReason = 'Confusing answers - could not get a valid reply after 2 tries';\n    newStage = stage;\n  } else {\n    route = retryRoute;\n    newStage = stage + '#' + (tries + 1);\n  }\n}\n\nif (type === 'image') {\n  route = 'photo';\n  rec.order_photo = 'Yes - ' + now;\n  newStage = rawStage;\n} else if (stage && stage !== 'awaiting_language' && type === 'text' && (wantsHuman || wantsHumanHi)) {\n  route = 'handoff';\n  handoffReason = 'Asked to speak to a sales associate / human';\n} else if (stage && stage !== 'escalated_to_sales' && stage !== 'awaiting_language' && type === 'text' && (wantsInfo || wantsInfoHi)) {\n  route = 'handoff';\n  handoffReason = 'Needs more information';\n  if (stage === 'awaiting_order_value' || stage === 'rate_list_sent') rec.interested_items = appendItems(rec.interested_items, text);\n} else if (!stage) {\n  route = 'ask_language';\n  newStage = 'awaiting_language';\n} else if (stage === 'awaiting_language') {\n  const l = text.toLowerCase();\n  if (replyId === 'lang_hi' || /hindi|हिंदी|हिन्दी/.test(l)) {\n    lang = 'hi';\n    route = 'greet';\n    newStage = 'awaiting_details';\n  } else if (replyId === 'lang_ta' || /tamil|தமிழ்/.test(l)) {\n    lang = 'ta';\n    route = 'greet';\n    newStage = 'awaiting_details';\n  } else if (replyId === 'lang_te' || /telugu|తెలుగు/.test(l)) {\n    lang = 'te';\n    route = 'greet';\n    newStage = 'awaiting_details';\n  } else if (replyId === 'lang_en' || /english|इंग्लिश|अंग्रेज़ी|अंग्रेजी/.test(l)) {\n    lang = 'en';\n    route = 'greet';\n    newStage = 'awaiting_details';\n  } else {\n    retryOrHandoff('ask_language');\n  }\n} else if (stage === 'awaiting_details') {\n  const fillers = ['hi', 'hii', 'hiii', 'hello', 'helo', 'hey', 'namaste', 'ok', 'okay', 'k', 'yes', 'no', 'thanks', 'thank you', 'thankyou', 'good morning', 'good afternoon', 'good evening', 'catalogue', 'catalog', 'price', 'rate', 'rates'];\n  const clean = text.toLowerCase().replace(/[^a-z\\u0900-\\u097F\\u0B80-\\u0BFF\\u0C00-\\u0C7F ]/g, '').trim();\n  const valid = type === 'text' && clean.length >= 3 && !fillers.includes(clean) && !fillerWords.includes(clean);\n  if (valid) {\n    route = 'ask_category';\n    rec.business_details = text;\n    newStage = 'awaiting_category';\n  } else {\n    retryOrHandoff('details_retry');\n  }\n} else if (stage === 'awaiting_category') {\n  const cats = ['shopkeeper', 'retailer', 'wholesaler', 'reseller', 'new business', 'other'];\n  const isListReply = type === 'interactive';\n  const catNames = { shopkeeper: 'Shopkeeper', retailer: 'Retailer', wholesaler: 'Wholesaler', reseller: 'Reseller', new_business: 'New Business', other: 'Other' };\n  const hiCats = { 'दुकानदार': 'Shopkeeper', 'रिटेलर': 'Retailer', 'होलसेलर': 'Wholesaler', 'थोक': 'Wholesaler', 'रीसेलर': 'Reseller', 'नया': 'New Business', 'अन्य': 'Other', 'கடைக்காரர்': 'Shopkeeper', 'ரீடெய்லர்': 'Retailer', 'மொத்த': 'Wholesaler', 'ரீசெல்லர்': 'Reseller', 'புதிய': 'New Business', 'மற்றவை': 'Other', 'షాప్': 'Shopkeeper', 'రిటైలర్': 'Retailer', 'హోల్': 'Wholesaler', 'రీసెల్లర్': 'Reseller', 'కొత్త': 'New Business', 'ఇతర': 'Other' };\n  const enMatch = cats.find(c => text.toLowerCase().includes(c));\n  const hiMatch = Object.keys(hiCats).find(h => text.includes(h));\n  const matched = catNames[replyId] || (enMatch ? catNames[enMatch.replace(' ', '_')] : '') || (hiMatch ? hiCats[hiMatch] : '');\n  if (isListReply || matched) {\n    route = 'send_catalogue';\n    rec.category = matched || text || 'Other';\n    newStage = 'awaiting_order_value';\n  } else {\n    retryOrHandoff('ask_category');\n  }\n} else if (stage === 'awaiting_order_value') {\n  const lowSel = replyId === 'ov_low' || /less than|से कम|கீழ்|కంటే తక్కువ/i.test(text);\n  const highSel = replyId === 'ov_high' || /or more|या अधिक|से ज़्यादा|से ज्यादा|அல்லது மேல்|లేదా ఎక్కువ/i.test(text);\n  const typed = (lowSel || highSel) ? null : parseAmount(text);\n  const amt = highSel ? 10000 : (lowSel ? 0 : typed);\n  if (amt === null) {\n    rec.interested_items = appendItems(rec.interested_items, text);\n    retryOrHandoff('order_retry');\n  } else if (amt < 10000) {\n    route = 'order_low';\n    rec.order_value = lowSel ? 'Less than ₹10,000' : '₹' + amt;\n    newStage = 'rate_list_sent';\n  } else {\n    route = 'order_high';\n    rec.order_value = highSel ? '₹10,000 or more' : '₹' + amt;\n    newStage = 'escalated_to_sales';\n  }\n} else {\n  rec.interested_items = appendItems(rec.interested_items, text);\n  const isFiller = fillerWords.includes(lower.trim()) || fillerWords.includes(lower.replace(/[^a-z ]/g, '').trim()) || !lower.replace(/[^a-z0-9\\u0900-\\u097F\\u0B80-\\u0BFF\\u0C00-\\u0C7F]/g, '');\n  if (stage === 'rate_list_sent' && type === 'text' && !isFiller) {\n    route = 'handoff';\n    handoffReason = 'Needs more information / follow-up after receiving the rate list';\n  }\n}\n\nconst T = {\n  en: {\n    welcome: '🙏 Welcome to Raj Creations.\\n\\nWe are manufacturers and wholesale suppliers of Hair Accessories.\\n\\n📌 Claw Clips\\n📌 Scrunchies\\n📌 Hair Bows\\n📌 Hair Bands\\n📌 Kids Hair Accessories\\n\\nPlease reply with:\\n\\n1️⃣ Shop / Business Name\\n2️⃣ City\\n\\nOur catalogue will be shared immediately.',\n    details_again: 'To share our catalogue, please reply with:\\n\\n1️⃣ Shop / Business Name\\n2️⃣ City\\n\\n(Example: Sharma Fancy Store, Pune)',\n    cat_body: 'Thank you! What type of business are you?',\n    cat_button: 'Business Type',\n    cat_rows: [\n      { id: 'shopkeeper', title: 'Shopkeeper' }, { id: 'retailer', title: 'Retailer' }, { id: 'wholesaler', title: 'Wholesaler' },\n      { id: 'reseller', title: 'Reseller' }, { id: 'new_business', title: 'New Business' }, { id: 'other', title: 'Other' }\n    ],\n    catalogue_caption: 'Raj Creations - Product Catalogue',\n    items: 'Please send us the items you are interested in from the catalogue.\\n\\n📌 Minimum order value (MOQ) is ₹5,000\\n📌 Packets cannot be broken\\n\\nPlease select your order value from the options below 👇',\n    ov_body: 'What is your order value?',\n    ov_again_body: 'Please select your order value 👇',\n    ov_high: '₹10,000 or more',\n    ov_low: 'Less than ₹10,000',\n    rate_caption: 'Here is our rate list. Please share the items you would like to order.',\n    sales_join: 'Thank you! Our team will get back to you shortly. 🙏',\n    photo_ack: 'Thank you for sharing your order! Our team will get back to you shortly. 🙏',\n    associate: 'Sure! I have informed our sales associate. They will contact you here shortly. 🙏'\n  },\n  ta: {\n    welcome: '🙏 ராஜ் கிரியேஷன்ஸுக்கு உங்களை வரவேற்கிறோம்.\\n\\nநாங்கள் ஹேர் ஆக்சஸரீஸ் உற்பத்தியாளர்கள் மற்றும் மொத்த விற்பனையாளர்கள்.\\n\\n📌 கிளா கிளிப்ஸ்\\n📌 ஸ்க்ரஞ்சீஸ்\\n📌 ஹேர் போஸ்\\n📌 ஹேர் பேண்ட்ஸ்\\n📌 குழந்தைகளுக்கான ஹேர் ஆக்சஸரீஸ்\\n\\nதயவுசெய்து பதிலில் அனுப்பவும்:\\n\\n1️⃣ கடை / வணிகத்தின் பெயர்\\n2️⃣ நகரம்\\n\\nஎங்கள் கேட்டலாக் உடனே அனுப்பப்படும்.',\n    details_again: 'கேட்டலாக் பெற, தயவுசெய்து பதிலில் அனுப்பவும்:\\n\\n1️⃣ கடை / வணிகத்தின் பெயர்\\n2️⃣ நகரம்\\n\\n(உதாரணம்: முருகன் ஃபேன்சி ஸ்டோர், சென்னை)',\n    cat_body: 'நன்றி! உங்கள் வணிகம் எந்த வகை?',\n    cat_button: 'வணிக வகை',\n    cat_rows: [\n      { id: 'shopkeeper', title: 'கடைக்காரர்' }, { id: 'retailer', title: 'ரீடெய்லர்' }, { id: 'wholesaler', title: 'மொத்த விற்பனையாளர்' },\n      { id: 'reseller', title: 'ரீசெல்லர்' }, { id: 'new_business', title: 'புதிய வணிகம்' }, { id: 'other', title: 'மற்றவை' }\n    ],\n    catalogue_caption: 'ராஜ் கிரியேஷன்ஸ் - தயாரிப்பு கேட்டலாக்',\n    items: 'கேட்டலாக்கில் உங்களுக்கு விருப்பமான பொருட்களை எங்களுக்கு அனுப்பவும்.\\n\\n📌 குறைந்தபட்ச ஆர்டர் மதிப்பு (MOQ) ₹5,000\\n📌 பாக்கெட்டுகளை பிரிக்க முடியாது\\n\\nகீழே உள்ள விருப்பங்களில் உங்கள் ஆர்டர் மதிப்பைத் தேர்ந்தெடுக்கவும் 👇',\n    ov_body: 'உங்கள் ஆர்டர் மதிப்பு எவ்வளவு?',\n    ov_again_body: 'தயவுசெய்து உங்கள் ஆர்டர் மதிப்பைத் தேர்ந்தெடுக்கவும் 👇',\n    ov_high: '₹10,000 அல்லது மேல்',\n    ov_low: '₹10,000-க்கு கீழ்',\n    rate_caption: 'இது எங்கள் விலைப் பட்டியல். நீங்கள் ஆர்டர் செய்ய விரும்பும் பொருட்களை அனுப்பவும்.',\n    sales_join: 'நன்றி! எங்கள் குழு விரைவில் உங்களைத் தொடர்பு கொள்ளும். 🙏',\n    photo_ack: 'உங்கள் ஆர்டரை அனுப்பியதற்கு நன்றி! எங்கள் குழு விரைவில் உங்களைத் தொடர்பு கொள்ளும். 🙏',\n    associate: 'நிச்சயமாக! எங்கள் விற்பனை பிரதிநிதிக்குத் தெரிவித்துள்ளோம். அவர் விரைவில் இங்கே உங்களைத் தொடர்பு கொள்வார். 🙏'\n  },\n  te: {\n    welcome: '🙏 రాజ్ క్రియేషన్స్ కు స్వాగతం.\\n\\nమేము హెయిర్ యాక్సెసరీస్ తయారీదారులు మరియు హోల్ సేల్ సరఫరాదారులం.\\n\\n📌 క్లా క్లిప్స్\\n📌 స్క్రంచీస్\\n📌 హెయిర్ బోస్\\n📌 హెయిర్ బ్యాండ్స్\\n📌 పిల్లల హెయిర్ యాక్సెసరీస్\\n\\nదయచేసి రిప్లైలో పంపండి:\\n\\n1️⃣ షాప్ / వ్యాపారం పేరు\\n2️⃣ నగరం\\n\\nమా క్యాటలాగ్ వెంటనే పంపబడుతుంది.',\n    details_again: 'క్యాటలాగ్ పొందడానికి, దయచేసి రిప్లైలో పంపండి:\\n\\n1️⃣ షాప్ / వ్యాపారం పేరు\\n2️⃣ నగరం\\n\\n(ఉదాహరణ: లక్ష్మి ఫ్యాన్సీ స్టోర్, హైదరాబాద్)',\n    cat_body: 'ధన్యవాదాలు! మీ వ్యాపారం ఏ రకం?',\n    cat_button: 'వ్యాపార రకం',\n    cat_rows: [\n      { id: 'shopkeeper', title: 'షాప్ కీపర్' }, { id: 'retailer', title: 'రిటైలర్' }, { id: 'wholesaler', title: 'హోల్ సేలర్' },\n      { id: 'reseller', title: 'రీసెల్లర్' }, { id: 'new_business', title: 'కొత్త వ్యాపారం' }, { id: 'other', title: 'ఇతర' }\n    ],\n    catalogue_caption: 'రాజ్ క్రియేషన్స్ - ప్రొడక్ట్ క్యాటలాగ్',\n    items: 'క్యాటలాగ్ నుండి మీకు నచ్చిన వస్తువులను మాకు పంపండి.\\n\\n📌 కనీస ఆర్డర్ విలువ (MOQ) ₹5,000\\n📌 ప్యాకెట్లను విడగొట్టడం కుదరదు\\n\\nకింద ఉన్న ఆప్షన్లలో మీ ఆర్డర్ విలువను ఎంచుకోండి 👇',\n    ov_body: 'మీ ఆర్డర్ విలువ ఎంత?',\n    ov_again_body: 'దయచేసి మీ ఆర్డర్ విలువను ఎంచుకోండి 👇',\n    ov_high: '₹10,000 లేదా ఎక్కువ',\n    ov_low: '₹10,000 కంటే తక్కువ',\n    rate_caption: 'ఇది మా రేట్ లిస్ట్. మీరు ఆర్డర్ చేయాలనుకునే వస్తువులను పంపండి.',\n    sales_join: 'ధన్యవాదాలు! మా టీమ్ త్వరలోనే మిమ్మల్ని సంప్రదిస్తుంది. 🙏',\n    photo_ack: 'మీ ఆర్డర్ పంపినందుకు ధన్యవాదాలు! మా టీమ్ త్వరలోనే మిమ్మల్ని సంప్రదిస్తుంది. 🙏',\n    associate: 'తప్పకుండా! మా సేల్స్ అసోసియేట్ కి తెలియజేశాము. వారు త్వరలోనే ఇక్కడ మిమ్మల్ని సంప్రదిస్తారు. 🙏'\n  },\n  hi: {\n    welcome: '🙏 राज क्रिएशन्स में आपका स्वागत है।\\n\\nहम हेयर एक्सेसरीज़ के निर्माता और होलसेल सप्लायर हैं।\\n\\n📌 क्लॉ क्लिप्स\\n📌 स्क्रंचीज़\\n📌 हेयर बोज़\\n📌 हेयर बैंड्स\\n📌 बच्चों की हेयर एक्सेसरीज़\\n\\nकृपया जवाब में भेजें:\\n\\n1️⃣ दुकान / बिज़नेस का नाम\\n2️⃣ शहर\\n\\nहमारा कैटलॉग तुरंत भेजा जाएगा।',\n    details_again: 'कैटलॉग पाने के लिए कृपया जवाब में भेजें:\\n\\n1️⃣ दुकान / बिज़नेस का नाम\\n2️⃣ शहर\\n\\n(उदाहरण: शर्मा फैंसी स्टोर, पुणे)',\n    cat_body: 'धन्यवाद! आपका बिज़नेस किस प्रकार का है?',\n    cat_button: 'बिज़नेस का प्रकार',\n    cat_rows: [\n      { id: 'shopkeeper', title: 'दुकानदार' }, { id: 'retailer', title: 'रिटेलर' }, { id: 'wholesaler', title: 'होलसेलर' },\n      { id: 'reseller', title: 'रीसेलर' }, { id: 'new_business', title: 'नया बिज़नेस' }, { id: 'other', title: 'अन्य' }\n    ],\n    catalogue_caption: 'राज क्रिएशन्स - प्रोडक्ट कैटलॉग',\n    items: 'कृपया कैटलॉग में से अपनी पसंद के आइटम हमें भेजें।\\n\\n📌 न्यूनतम ऑर्डर वैल्यू (MOQ) ₹5,000 है\\n📌 पैकेट तोड़े नहीं जा सकते\\n\\nकृपया नीचे दिए विकल्पों में से अपनी ऑर्डर वैल्यू चुनें 👇',\n    ov_body: 'आपकी ऑर्डर वैल्यू कितनी है?',\n    ov_again_body: 'कृपया अपनी ऑर्डर वैल्यू चुनें 👇',\n    ov_high: '₹10,000 या अधिक',\n    ov_low: '₹10,000 से कम',\n    rate_caption: 'यह हमारी रेट लिस्ट है। कृपया जो आइटम ऑर्डर करना चाहते हैं, वे हमें भेजें।',\n    sales_join: 'धन्यवाद! हमारी टीम जल्द ही आपसे संपर्क करेगी। 🙏',\n    photo_ack: 'अपना ऑर्डर भेजने के लिए धन्यवाद! हमारी टीम जल्द ही आपसे संपर्क करेगी। 🙏',\n    associate: 'ज़रूर! हमने हमारे सेल्स एसोसिएट को सूचित कर दिया है। वे जल्द ही यहीं आपसे संपर्क करेंगे। 🙏'\n  }\n};\n\nreturn [{ json: Object.assign(rec, {\n  stage: newStage ? (lang !== 'en' ? lang + ':' : '') + newStage : '',\n  lang: lang,\n  language: ({ en: 'English', hi: 'Hindi', ta: 'Tamil', te: 'Telugu' })[lang] || 'English',\n  t: T[lang],\n  last_message: text || '[' + type + ']',\n  updated_at: now,\n  route: route,\n  handoff_reason: handoffReason,\n  phone_number_id: (trig.metadata && trig.metadata.phone_number_id) || '',\n}) }];"
+      },
+      "id": "9ef58b8f-1d43-45af-b0f4-44864c0069c9",
+      "name": "Build Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1W4jmnP3XUVXk7EimIOOjTx4GcfaqHiUAXnaM1bsGiHE/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "phone"
+          ],
+          "value": {
+            "phone": "={{ $json.phone }}",
+            "whatsapp_name": "={{ $json.whatsapp_name }}",
+            "business_details": "={{ $json.business_details }}",
+            "category": "={{ $json.category }}",
+            "interested_items": "={{ $json.interested_items }}",
+            "order_value": "={{ $json.order_value }}",
+            "order_photo": "={{ $json.order_photo }}",
+            "stage": "={{ $json.stage }}",
+            "last_message": "={{ $json.last_message }}",
+            "first_contact": "={{ $json.first_contact }}",
+            "updated_at": "={{ $json.updated_at }}"
+          },
+          "schema": [
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp_name",
+              "displayName": "whatsapp_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_details",
+              "displayName": "business_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "interested_items",
+              "displayName": "interested_items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order_value",
+              "displayName": "order_value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order_photo",
+              "displayName": "order_photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stage",
+              "displayName": "stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "first_contact",
+              "displayName": "first_contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "f2d0ca5a-a86a-4a20-a760-03df202e347b",
+      "name": "Save Lead to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        944,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "niAxCR2tItJiqkef",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "greet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "greet"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "ask_category",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "ask_category"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "send_catalogue",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "send_catalogue"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "order_low",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "order_low"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "order_high",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "order_high"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "order_retry",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "order_retry"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "photo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "photo"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "details_retry",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "details_retry"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "handoff",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "handoff"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build Context').item.json.route }}",
+                    "rightValue": "ask_language",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "ask_language"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ddc0eaa7-9241-4b95-83aa-ca98aa69a5d5",
+      "name": "Route by Stage",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.welcome }}",
+        "additionalFields": {}
+      },
+      "id": "f9fd6a0d-4dea-4b5b-830b-05d0f6c1dbbf",
+      "name": "Send Welcome Message",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        128
+      ],
+      "webhookId": "3bb29abc-5735-4bd8-9222-569fa257f5d3",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Build Context').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Build Context').item.json.phone }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"body\": { \"text\": {{ JSON.stringify($('Build Context').item.json.t.cat_body) }} },\n    \"action\": {\n      \"button\": {{ JSON.stringify($('Build Context').item.json.t.cat_button) }},\n      \"sections\": [\n        {\n          \"title\": \"Business Type\",\n          \"rows\": {{ JSON.stringify($('Build Context').item.json.t.cat_rows) }}\n        }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "2f92df88-eeb2-4b4a-9377-a4214eb24f88",
+      "name": "Ask Business Category",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1024,
+        320
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1hiB2ixiiNfr1lpHNXp59Yfgg0iVlIne5",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "174984fb-0acf-432b-a2f6-e2817aa63905",
+      "name": "Download Catalogue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        1472
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$input.item.binary.data.mimeType = 'application/pdf';\n$input.item.binary.data.fileName = 'Raj Creations Catalogue.pdf';\n$input.item.binary.data.fileExtension = 'pdf';\nreturn $input.item;"
+      },
+      "id": "42934c05-f235-4367-a3d9-438953239e34",
+      "name": "Mark Catalogue as PDF",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "messageType": "document",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {
+          "mediaFilename": "Raj Creations Catalogue.pdf",
+          "mediaCaption": "={{ $('Build Context').item.json.t.catalogue_caption }}"
+        }
+      },
+      "id": "3a0d483c-ced1-4d04-811d-68b775522929",
+      "name": "Send Catalogue PDF",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        512
+      ],
+      "webhookId": "694f4a76-06cc-444b-9c02-59e25d8d9dd6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.items }}",
+        "additionalFields": {}
+      },
+      "id": "0b788e69-66a5-4d03-81a5-9997f3ac5fd3",
+      "name": "Ask Items and Order Value",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        512
+      ],
+      "webhookId": "b98e6ea1-2e99-4543-9bd1-d303e286e72e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Build Context').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Build Context').item.json.phone }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"button\",\n    \"body\": { \"text\": {{ JSON.stringify($('Build Context').item.json.t.ov_body) }} },\n    \"action\": {\n      \"buttons\": [\n        { \"type\": \"reply\", \"reply\": { \"id\": \"ov_high\", \"title\": {{ JSON.stringify($('Build Context').item.json.t.ov_high) }} } },\n        { \"type\": \"reply\", \"reply\": { \"id\": \"ov_low\", \"title\": {{ JSON.stringify($('Build Context').item.json.t.ov_low) }} } }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "7e3d07c9-850d-409b-8fdb-e0de5bed842c",
+      "name": "Select Order Value",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1920,
+        512
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1ZvEr8kF06hDTsPhq71WslsQxB5v5aumg",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "3e85eb41-6c24-4c1f-a4bd-ef2758d25a87",
+      "name": "Download Rate List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        1664
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$input.item.binary.data.mimeType = 'application/pdf';\n$input.item.binary.data.fileName = 'Raj Creations Rate List.pdf';\n$input.item.binary.data.fileExtension = 'pdf';\nreturn $input.item;"
+      },
+      "id": "a3a5cf48-20c9-47cb-b863-8b15e6cb86a7",
+      "name": "Mark Rate List as PDF",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        1088
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "messageType": "document",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {
+          "mediaFilename": "Raj Creations Rate List.pdf",
+          "mediaCaption": "={{ $('Build Context').item.json.t.rate_caption }}"
+        }
+      },
+      "id": "ec36a4a1-3601-4711-9558-7692495e0d22",
+      "name": "Send Rate List PDF",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        704
+      ],
+      "webhookId": "ce342afb-a520-48e4-96f6-48459cebeda5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.sales_join }}",
+        "additionalFields": {}
+      },
+      "id": "530c80e9-a005-4b20-be8d-51c26fcbe0eb",
+      "name": "Tell Customer Sales Will Join",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        896
+      ],
+      "webhookId": "6b027c06-d50e-48b5-856d-c51fd8b71e4c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "919112296139",
+        "textBody": "=🔔 This customer needs your intervention (order value ₹10,000+)\n\nName: {{ $('Build Context').item.json.whatsapp_name }}\nNumber: +{{ $('Build Context').item.json.phone }}\nBusiness / City: {{ $('Build Context').item.json.business_details }}\nBusiness Category: {{ $('Build Context').item.json.category }}\nLanguage: {{ $('Build Context').item.json.language }}\nOrder Value: {{ $('Build Context').item.json.order_value }}",
+        "additionalFields": {}
+      },
+      "id": "8dcc922e-5bc8-405f-9fd0-3d708d17beff",
+      "name": "Notify Mahek - Big Order",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        896
+      ],
+      "webhookId": "a543693a-77f6-473e-b304-149322fbb049",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Build Context').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Build Context').item.json.phone }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"button\",\n    \"body\": { \"text\": {{ JSON.stringify($('Build Context').item.json.t.ov_again_body) }} },\n    \"action\": {\n      \"buttons\": [\n        { \"type\": \"reply\", \"reply\": { \"id\": \"ov_high\", \"title\": {{ JSON.stringify($('Build Context').item.json.t.ov_high) }} } },\n        { \"type\": \"reply\", \"reply\": { \"id\": \"ov_low\", \"title\": {{ JSON.stringify($('Build Context').item.json.t.ov_low) }} } }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "b034aa07-293f-4d4d-a461-9816d3569f6a",
+      "name": "Ask Order Value Again",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1024,
+        1088
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "919112296139",
+        "textBody": "=📷 A customer has sent a photo of their order. Please intervene.\n\nName: {{ $('Build Context').item.json.whatsapp_name }}\nNumber: +{{ $('Build Context').item.json.phone }}\nBusiness / City: {{ $('Build Context').item.json.business_details }}\nBusiness Category: {{ $('Build Context').item.json.category }}\nLanguage: {{ $('Build Context').item.json.language }}",
+        "additionalFields": {}
+      },
+      "id": "0a53a6e8-5fcd-4389-9466-1094ef936658",
+      "name": "Notify Mahek - Order Photo",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        1280
+      ],
+      "webhookId": "74011e5a-f9f6-497f-b4ce-bfcc37cacd78",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.photo_ack }}",
+        "additionalFields": {}
+      },
+      "id": "df235fec-5723-4aa3-8ba3-0a0e5683d165",
+      "name": "Acknowledge Order Photo",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        1280
+      ],
+      "webhookId": "b3e1ff81-5126-4675-88f6-020362e13497",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.details_again }}",
+        "additionalFields": {}
+      },
+      "id": "57b6d353-4c50-44e1-9110-56792149b522",
+      "name": "Ask Details Again",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        1856
+      ],
+      "webhookId": "f07f67f7-4e59-4c48-af67-9ff0a7ec858f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('Build Context').item.json.phone }}",
+        "textBody": "={{ $('Build Context').item.json.t.associate }}",
+        "additionalFields": {}
+      },
+      "id": "dc017719-6032-423e-9a2d-f697f42f443e",
+      "name": "Tell Customer Associate Will Contact",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        2048
+      ],
+      "webhookId": "0af5fb08-5df5-4a1e-ac25-da0fd1bf90d3",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('Build Context').item.json.phone_number_id }}",
+        "recipientPhoneNumber": "919112296139",
+        "textBody": "=🙋 A customer needs your help. Please reply to them.\n\nReason: {{ $('Build Context').item.json.handoff_reason }}\nName: {{ $('Build Context').item.json.whatsapp_name }}\nNumber: +{{ $('Build Context').item.json.phone }}\nBusiness / City: {{ $('Build Context').item.json.business_details }}\nBusiness Category: {{ $('Build Context').item.json.category }}\nLanguage: {{ $('Build Context').item.json.language }}\nOrder Value: {{ $('Build Context').item.json.order_value || 'Not given yet' }}\nLast message: {{ $('Build Context').item.json.last_message }}",
+        "additionalFields": {}
+      },
+      "id": "e9ec2ab0-fe3e-4f97-b4ac-ee07a106bf55",
+      "name": "Notify Mahek - Help Needed",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        1664
+      ],
+      "webhookId": "b330a1ee-94da-4f00-9353-06f3742096e6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Build Context').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Build Context').item.json.phone }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"body\": { \"text\": \"🙏 Welcome to Raj Creations!\\n\\nPlease choose your language.\\nकृपया अपनी भाषा चुनें।\\nஉங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.\\nమీ భాషను ఎంచుకోండి.\" },\n    \"action\": {\n      \"button\": \"Language / भाषा\",\n      \"sections\": [\n        {\n          \"title\": \"Language\",\n          \"rows\": [\n            { \"id\": \"lang_en\", \"title\": \"English\" },\n            { \"id\": \"lang_hi\", \"title\": \"हिंदी (Hindi)\" },\n            { \"id\": \"lang_ta\", \"title\": \"தமிழ் (Tamil)\" },\n            { \"id\": \"lang_te\", \"title\": \"తెలుగు (Telugu)\" }\n          ]\n        }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "63414b81-2050-429a-8869-7d868adef12f",
+      "name": "Ask Language",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1024,
+        2240
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Only Customer Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only Customer Messages": {
+      "main": [
+        [
+          {
+            "node": "Lookup Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Customer": {
+      "main": [
+        [
+          {
+            "node": "Build Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Context": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Route by Stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Stage": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Business Category",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Catalogue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Rate List",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tell Customer Sales Will Join",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Order Value Again",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Mahek - Order Photo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Details Again",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tell Customer Associate Will Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Catalogue": {
+      "main": [
+        [
+          {
+            "node": "Mark Catalogue as PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Catalogue as PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Catalogue PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Catalogue PDF": {
+      "main": [
+        [
+          {
+            "node": "Ask Items and Order Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Items and Order Value": {
+      "main": [
+        [
+          {
+            "node": "Select Order Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Rate List": {
+      "main": [
+        [
+          {
+            "node": "Mark Rate List as PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Rate List as PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Rate List PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tell Customer Sales Will Join": {
+      "main": [
+        [
+          {
+            "node": "Notify Mahek - Big Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Mahek - Order Photo": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Order Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tell Customer Associate Will Contact": {
+      "main": [
+        [
+          {
+            "node": "Notify Mahek - Help Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "errorWorkflow": "Ghbf3mrOPdK8ZgxM"
+  },
+  "versionId": "62542108-087c-476f-a59b-aed36b2339ca",
+  "meta": {
+    "instanceId": "e6dcb6b4f729fc8cb974023ad5ed9c634bc11175c3490bc57b4745cde3f552d0"
+  },
+  "nodeGroups": [
+    {
+      "id": "7dd1996b-a841-4520-9fd9-8d466db14b9d",
+      "name": "Track conversation",
+      "nodeIds": [
+        "b5818112-3166-4af3-aeba-fb8eb94cf71c",
+        "91eda748-b816-4816-b2dc-928c6508e593",
+        "9ef58b8f-1d43-45af-b0f4-44864c0069c9",
+        "f2d0ca5a-a86a-4a20-a760-03df202e347b"
+      ],
+      "description": "Finds the customer by phone, works out their step in the chat, and saves all their details to the leads sheet"
+    },
+    {
+      "id": "5141f3a2-42bf-4405-aa9d-c462ffd75c46",
+      "name": "Reply to customer",
+      "nodeIds": [
+        "ddc0eaa7-9241-4b95-83aa-ca98aa69a5d5",
+        "f9fd6a0d-4dea-4b5b-830b-05d0f6c1dbbf",
+        "2f92df88-eeb2-4b4a-9377-a4214eb24f88",
+        "174984fb-0acf-432b-a2f6-e2817aa63905",
+        "42934c05-f235-4367-a3d9-438953239e34",
+        "3a0d483c-ced1-4d04-811d-68b775522929",
+        "3e85eb41-6c24-4c1f-a4bd-ef2758d25a87",
+        "a3a5cf48-20c9-47cb-b863-8b15e6cb86a7",
+        "0b788e69-66a5-4d03-81a5-9997f3ac5fd3",
+        "7e3d07c9-850d-409b-8fdb-e0de5bed842c",
+        "ec36a4a1-3601-4711-9558-7692495e0d22",
+        "530c80e9-a005-4b20-be8d-51c26fcbe0eb",
+        "8dcc922e-5bc8-405f-9fd0-3d708d17beff",
+        "b034aa07-293f-4d4d-a461-9816d3569f6a",
+        "57b6d353-4c50-44e1-9110-56792149b522",
+        "0a53a6e8-5fcd-4389-9466-1094ef936658",
+        "df235fec-5723-4aa3-8ba3-0a0e5683d165",
+        "dc017719-6032-423e-9a2d-f697f42f443e",
+        "e9ec2ab0-fe3e-4f97-b4ac-ee07a106bf55",
+        "63414b81-2050-429a-8869-7d868adef12f"
+      ],
+      "description": "Sends greeting, category list, catalogue or rate list; alerts Mahek for big orders, photos, human or info requests"
+    }
+  ],
+  "id": "XSDvDOco7vZZFZuB",
+  "tags": []
+}

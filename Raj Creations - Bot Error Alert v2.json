@@ -1,0 +1,78 @@
+{
+  "name": "Raj Creations - Bot Error Alert v2",
+  "nodes": [
+    {
+      "id": "1d11f9c7-f052-400f-81fc-4fb4e570f32e",
+      "name": "On Bot Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "71db648d-32e2-4dfc-b6b9-254de68da18e",
+      "name": "Build Error Alert",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            { "id": "step", "name": "step", "type": "string", "value": "={{ String($json.execution?.lastNodeExecuted || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').slice(0, 100) }}" },
+            { "id": "error", "name": "error", "type": "string", "value": "={{ String($json.execution?.error?.message || $json.trigger?.error?.message || 'unknown').replace(/[\\r\\n\\t]+/g, ' ').replace(/ {2,}/g, ' ').slice(0, 250) }}" },
+            { "id": "time", "name": "time", "type": "string", "value": "={{ $now.setZone('Asia/Kolkata').toFormat('dd MMM yyyy, hh:mm a') }}" },
+            { "id": "link", "name": "link", "type": "string", "value": "={{ $json.execution?.url || $json.execution?.id || '-' }}" },
+            { "id": "wf", "name": "wf", "type": "string", "value": "={{ $json.workflow?.name || 'Raj Creations - WhatsApp Lead Funnel' }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "723bbd69-eedf-4a14-9438-4ca91211a29a",
+      "name": "Notify Mahek - Bot Error (Template)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/1342683025589974/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: \"whatsapp\", to: \"919112296139\", type: \"template\", template: { name: \"rc_bot_error_alert\", language: { code: \"en_US\" }, components: [{ type: \"body\", parameters: [{ type: \"text\", text: $json.step || \"-\" }, { type: \"text\", text: $json.error || \"-\" }, { type: \"text\", text: $json.time }] }] } }) }}",
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "credentials": { "whatsAppApi": { "id": "KsMyfId0Tnk8UTFr", "name": "WhatsApp account" } }
+    },
+    {
+      "id": "4b978edc-c5f7-46f6-b179-5edca82ff8b8",
+      "name": "Notify Mahek - Bot Error (Plain Text Fallback)",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [660, 100],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumberId": "1342683025589974",
+        "recipientPhoneNumber": "919112296139",
+        "messageType": "text",
+        "textBody": "=⚠️ The WhatsApp bot hit an error and a customer may not have got a reply.\n\nWorkflow: {{ $('Build Error Alert').item.json.wf }}\nFailed step: {{ $('Build Error Alert').item.json.step }}\nError: {{ $('Build Error Alert').item.json.error }}\nTime: {{ $('Build Error Alert').item.json.time }}\nExecution: {{ $('Build Error Alert').item.json.link }}\n\nPlease check recent customer chats."
+      },
+      "webhookId": "d2ead8b9-3001-4347-8c4e-087bb843af93",
+      "credentials": { "whatsAppApi": { "id": "KsMyfId0Tnk8UTFr", "name": "WhatsApp account" } }
+    }
+  ],
+  "connections": {
+    "On Bot Error": { "main": [[{ "node": "Build Error Alert", "type": "main", "index": 0 }]] },
+    "Build Error Alert": { "main": [[{ "node": "Notify Mahek - Bot Error (Template)", "type": "main", "index": 0 }]] },
+    "Notify Mahek - Bot Error (Template)": { "main": [[], [{ "node": "Notify Mahek - Bot Error (Plain Text Fallback)", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "id": "Y5s1JqJWv7vTBvea"
+}

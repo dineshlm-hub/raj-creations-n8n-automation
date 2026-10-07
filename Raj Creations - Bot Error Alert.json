@@ -1,0 +1,66 @@
+{
+  "name": "Raj Creations - Bot Error Alert",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ce170d81-c9f3-4eae-8ec4-a096070f31d2",
+      "name": "On Bot Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1342683025589974",
+        "recipientPhoneNumber": "919112296139",
+        "textBody": "=⚠️ The WhatsApp bot hit an error and a customer may not have got a reply.\n\nWorkflow: {{ $json.workflow?.name || 'Raj Creations - WhatsApp Lead Funnel' }}\nFailed step: {{ $json.execution?.lastNodeExecuted || 'unknown' }}\nError: {{ ($json.execution?.error?.message || $json.trigger?.error?.message || 'unknown').slice(0, 300) }}\nTime: {{ $now.setZone('Asia/Kolkata').toFormat('dd MMM yyyy, hh:mm a') }}\nExecution: {{ $json.execution?.url || $json.execution?.id || '-' }}\n\nPlease check recent customer chats.",
+        "additionalFields": {}
+      },
+      "id": "189dfa0f-c90e-4568-8ad6-8ba9fd96261c",
+      "name": "Notify Mahek - Bot Error",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "webhookId": "fc86fd7d-bc61-4827-bec9-a7701c72029d",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KsMyfId0Tnk8UTFr",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On Bot Error": {
+      "main": [
+        [
+          {
+            "node": "Notify Mahek - Bot Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6a7b75d2-244b-4b31-9a07-40aac6fad085",
+  "meta": {
+    "instanceId": "e6dcb6b4f729fc8cb974023ad5ed9c634bc11175c3490bc57b4745cde3f552d0"
+  },
+  "nodeGroups": [],
+  "id": "Ghbf3mrOPdK8ZgxM",
+  "tags": []
+}

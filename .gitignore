@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# n8n local/runtime data
+.n8n/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Website backup archives
+website/rajcreation.info - UPDATE (no photos).zip
+website/rajcreation.info - upload to public_html.zip
+
+# Windows / macOS
+Thumbs.db
+.DS_Store

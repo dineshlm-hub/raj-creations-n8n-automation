@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Opening WhatsApp chat – Raj Creations</title>
+<!-- Used by the "Chat with customer" button in Mahek's WhatsApp alerts (template rc_lead_alert):
+     Meta doesn't allow wa.me links in template buttons, so the button opens /chat/?n=<number> and this page forwards to WhatsApp. -->
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #faf6f1; color: #241c22; font: 16px/1.5 system-ui, sans-serif; text-align: center; padding: 16px; }
+  a { display: inline-block; margin-top: 12px; background: #1f8f4e; color: #fff; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+  <div>
+    <p id="msg">Opening the WhatsApp chat…</p>
+    <a id="go" href="https://wa.me/" hidden>Open WhatsApp chat</a>
+  </div>
+  <script>
+    (function () {
+      var n = (new URLSearchParams(location.search).get('n') || '').replace(/\D/g, '');
+      var msg = document.getElementById('msg'), go = document.getElementById('go');
+      if (!/^\d{10,15}$/.test(n)) { msg.textContent = 'This chat link is not complete.'; return; }
+      var url = 'https://wa.me/' + n;
+      go.href = url;
+      go.hidden = false;
+      msg.textContent = 'Opening the WhatsApp chat with +' + n + '…';
+      location.replace(url);
+    })();
+  </script>
+</body>
+</html>

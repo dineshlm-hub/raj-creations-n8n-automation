@@ -1,0 +1,61 @@
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div>
+      <strong>Raj Creations</strong>
+      <p data-i18n="foot.about">Manufacturer &amp; wholesale supplier of hair accessories.</p>
+    </div>
+    <div class="foot-links">
+      <a href="{{base}}clutchers/" data-i18n="nav.clutchers">Clutchers</a>
+      <a href="{{base}}scrunchies/" data-i18n="nav.scrunchies">Scrunchies &amp; Bands</a>
+      <a href="{{base}}tie-bow/" data-i18n="nav.tiebow">Tie Bows</a>
+    </div>
+    <div>
+      <a class="wa-link" href="#" data-wa="Hi, I would like to know more about your products." data-i18n="foot.wa">WhatsApp us</a>
+      <p class="muted"><span data-i18n="foot.call">Call</span> {{phone}}</p>
+    </div>
+  </div>
+</footer>
+
+<dialog id="viewer" class="sheet" aria-label="Item photos">
+  <div class="sheet-head">
+    <div>
+      <p class="eyebrow" id="v-cat"></p>
+      <h2 id="v-title"></h2>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="Close">×</button>
+  </div>
+  <div class="sheet-body" id="v-body"></div>
+  <div class="sheet-foot">
+    <button class="btn ghost" type="button" id="v-prev" data-i18n="v.prev">‹ Previous</button>
+    <button class="btn ghost" type="button" id="v-next" data-i18n="v.next">Next ›</button>
+  </div>
+</dialog>
+
+<dialog id="cart" class="sheet drawer" aria-label="Your order">
+  <div class="sheet-head">
+    <div>
+      <p class="eyebrow" data-i18n="cart.eyebrow">Your order</p>
+      <h2 data-i18n="cart.title">Order summary</h2>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="Close">×</button>
+  </div>
+  <div class="sheet-body" id="cart-body"></div>
+</dialog>
+
+<dialog id="photo" class="lightbox" aria-label="Photo">
+  <div class="lb-top">
+    <span class="lb-count" id="lb-count"></span>
+    <button class="lb-close" type="button" data-close aria-label="Close" data-i18n-aria="lb.close">×</button>
+  </div>
+  <div class="lb-imgs" id="lb-imgs"></div>
+  <div class="lb-panel" id="lb-panel"></div>
+</dialog>
+
+<div class="order-bar" id="order-bar" role="region" aria-label="Your order" hidden>
+  <div class="wrap order-bar-in">
+    <div class="ob-text"><strong id="ob-total"></strong><span class="muted small" id="ob-meta"></span></div>
+    <button class="btn primary" type="button" id="ob-open" data-i18n="ob.view">View order</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>

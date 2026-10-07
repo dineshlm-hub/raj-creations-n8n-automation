@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{head}}
+</head>
+<body data-page="{{page}}" data-cat="" data-base="{{base}}">
+{{header}}
+<main id="main" class="wrap" tabindex="-1">
+  <div class="page-head">
+    <p class="eyebrow" data-i18n="rates.eyebrow">Wholesale</p>
+    <h1 data-i18n="rates.h1">Rate list</h1>
+    <p class="lede" data-i18n-html="rates.lede">Rates are <strong>per dozen</strong>. Items are sold in <strong>full packets</strong> – scrunchies, rubber bands &amp; bun donuts in <strong>full boxes</strong>. <strong>5% GST</strong> is added to the bill; shipping is charged separately.</p>
+    <p class="notice nobreak" data-i18n-html="rates.nobreak">📦 <strong>A packet or box cannot be broken.</strong> The packet / box size shown with each item is the smallest quantity you can order.</p>
+  </div>
+
+  <p class="notice promo" id="promo">{{promo}}</p>
+  <div class="levels-box">
+    <p class="levels-label" data-i18n="rates.typeLabel">Price levels</p>
+    <p class="muted small" id="you-are"></p>
+    <div class="levels" id="types" role="group" aria-label="Price level"></div>
+    <p class="muted small" id="types-hint"></p>
+    <p class="notice nobreak" id="carton-info"></p>
+  </div>
+
+  <div class="rate-tabs" id="rate-tabs" role="group" aria-label="Category"></div>
+  <p class="muted small" id="rate-count" aria-live="polite"></p>
+  <div id="rate-list" class="rate-list"><p class="muted" data-i18n="rates.loading">Loading rates…</p></div>
+</main>
+{{footer}}
+</body>
+</html>

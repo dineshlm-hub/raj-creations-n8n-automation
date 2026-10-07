@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{head}}
+</head>
+<body data-page="{{page}}" data-cat="{{cat}}" data-base="{{base}}">
+{{header}}
+<main id="main" tabindex="-1">
+  <section class="hero wrap">
+    <p class="eyebrow" data-i18n="home.eyebrow">Manufacturer &amp; wholesale supplier</p>
+    <h1 data-i18n="home.h1">Hair accessories for your shop, at wholesale rates</h1>
+    <p class="lede" data-i18n="home.lede">Claw clips, scrunchies, rubber bands, hair bun donuts and tie bows. Browse the catalogue, or type an item code in the search box above.</p>
+    <ul class="facts">
+      <li data-i18n-html="home.fact1">Minimum order from <strong>₹5,000</strong> (before GST)</li>
+      <li data-i18n-html="home.fact2"><strong>Full packets / boxes</strong> only</li>
+      <li data-i18n-html="home.fact3"><strong>Lower prices</strong> on bigger orders</li>
+    </ul>
+    <p class="notice promo" id="promo">{{promo}}</p>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title" data-i18n="home.catalogue">Catalogue</h2>
+    <div class="cat-cards" id="cat-cards">{{catcards}}</div>
+  </section>
+
+  <section class="wrap price-cta" id="price-cta">
+    <div>
+      <h2 data-i18n="cta.title">Want the rate list?</h2>
+      <p data-i18n="cta.text">Message us on WhatsApp and we'll send you the rate list link straight away.</p>
+    </div>
+    <a class="btn primary wa-link" href="#" data-wa="Hi, please share the rate list." data-i18n="cta.btn">Get rates on WhatsApp</a>
+  </section>
+</main>
+{{footer}}
+</body>
+</html>
