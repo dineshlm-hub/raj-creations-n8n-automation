@@ -192,8 +192,12 @@ The approved WhatsApp templates (alerts to Mahek, order confirmed) still say "Ra
 
 A private page where Mahek checks website orders, changes them and tells the customer. It is not linked from the site and is kept out of search engines.
 
+**Open it**
+- In WhatsApp, Mahek says *hi* to the bot (or types *page*, *website* or *login*). The reply has a green **Open orders page** button. The *orders* list has the same button.
+- Tip: on the page, use the browser menu → **Add to Home screen** to get an app-like icon on her phone.
+
 **Log in**
-- Open **rajcreation.info/orders/** and tap **Send code to WhatsApp**. A 6-digit code arrives from the bot within seconds. Type it in.
+- On the page, tap **Send code to WhatsApp**. A 6-digit code arrives from the bot within seconds. Type it in.
 - The code works for 10 minutes. After 5 wrong tries it stops working. At most 5 codes are sent per hour.
 - WhatsApp only lets the bot message Mahek within 24 hours of her last message to it. If no code arrives, send "hi" to the bot first.
 - The login lasts 7 days on that phone. **Log out** ends it at once.
