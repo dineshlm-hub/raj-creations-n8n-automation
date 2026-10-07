@@ -367,8 +367,8 @@ dialog.lightbox::backdrop { background: #141013; }
 .page-head .notice.nobreak { font-size: .95rem; max-width: 60ch; margin: 4px 0 0; }
 .field { display: grid; gap: 4px; margin-bottom: 10px; }
 .field span { font-size: .85rem; font-weight: 600; }
-.field input { height: 44px; border: 1.5px solid var(--line); border-radius: 10px; padding: 0 12px; background: var(--surface); }
-.field input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.field input, .field select { height: 44px; border: 1.5px solid var(--line); border-radius: 10px; padding: 0 12px; background: var(--surface); font: inherit; color: inherit; width: 100%; }
+.field input:focus, .field select:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .link-btn { border: 0; background: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: .85rem; padding: 6px 0; }
 
 /* floating, rounded order bar */

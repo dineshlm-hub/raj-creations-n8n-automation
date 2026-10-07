@@ -17,6 +17,7 @@
   const round05 = (x) => Math.round(x * 2) / 2;
   const nice = (p) => '+' + String(p || '').replace(/^91(\d{5})(\d{5})$/, '91 $1 $2');
   const STATUS = { new: 'New', updated: 'Updated by customer', confirmed: 'Confirmed', cancelled: 'Cancelled' };
+  const stateOf = (id) => (String(id || '').match(/^RC-\d+([A-Z]{2})$/) || [])[1] || ''; // RC-001MH -> MH
   const units = (u, n) => (u === 'box' ? (n === 1 ? 'box' : 'boxes') : (n === 1 ? 'packet' : 'packets'));
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } },
@@ -110,6 +111,7 @@
 
   // ---- login ----
   function showLogin(msg) {
+    onList = false;
     setTitle(); setBar('');
     app.innerHTML = `<div class="card"><h1>Log in</h1>
       <p class="muted">A 6-digit login code is sent to Mahek's WhatsApp from the Raj Creation bot.</p>
@@ -146,26 +148,46 @@
   $('#logout').onclick = async () => { await api('logout'); store.del('rc_portal'); session = null; showLogin(); };
 
   // ---- order list ----
-  let listFilter = store.get('rc_portal_filter') || 'open', listQuery = '', listCache = null;
+  // The list refreshes itself every 30 seconds (and when the page is opened again), so new orders appear on their own.
+  // Orders Mahek has not opened yet are marked NEW.
+  let listFilter = store.get('rc_portal_filter') || 'open', listQuery = '', listCache = null, listAt = 0, onList = false;
+  const seen = new Set(store.get('rc_portal_seen') || []);
+  const markSeen = (id) => { seen.add(id); store.set('rc_portal_seen', [...seen].slice(-500)); };
+  async function fetchList() {
+    const res = await api('list');
+    if (res.ok) { if (!store.get('rc_portal_seen')) res.orders.forEach((o) => seen.add(o.order_id)); store.set('rc_portal_seen', [...seen].slice(-500)); listCache = res.orders; listAt = Date.now(); }
+    return res;
+  }
+  setInterval(async () => {
+    if (!onList || !session || document.hidden || !$('#sheet').hidden) return;
+    const before = JSON.stringify(listCache);
+    const res = await fetchList();
+    if (!res.ok || !onList || JSON.stringify(listCache) === before) return;
+    const typing = document.activeElement && document.activeElement.id === 'q';
+    showList(false);
+    if (typing) { const q = $('#q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && onList && session && Date.now() - listAt > 15000) showList(true); });
   async function showList(refresh = true) {
-    setTitle(); setBar('');
+    setTitle(); setBar(''); onList = true;
     if (refresh || !listCache) {
       app.innerHTML = '<p class="muted"><span class="spin"></span> Loading orders…</p>';
-      const res = await api('list');
+      const res = await fetchList();
       if (!res.ok) { if (res.error !== 'login') app.innerHTML = note('err', res.message) + '<button class="btn" type="button" id="retry">Try again</button>'; const b = $('#retry'); if (b) b.onclick = () => showList(); return; }
-      listCache = res.orders;
     }
+    if (!onList) return;
     const chip = (id, label) => `<button class="chip" type="button" data-f="${id}" aria-pressed="${listFilter === id}">${label}</button>`;
     app.innerHTML = `<div class="chips">${chip('open', 'Open')}${chip('confirmed', 'Confirmed')}${chip('all', 'All')}
       <button class="chip" type="button" id="reload">↻ Refresh</button></div>
-      <input type="search" id="q" placeholder="Search order ID, name, shop, city or phone" value="${esc(listQuery)}" aria-label="Search orders">
-      <div id="orders" style="margin-top:12px"></div>`;
+      <input type="search" id="q" placeholder="Search order ID, name, shop, city, state or phone" value="${esc(listQuery)}" aria-label="Search orders">
+      <p class="small muted" style="margin:6px 2px 0">${listCache.filter((o) => !seen.has(o.order_id)).length ? `<b style="color:var(--accent)">${listCache.filter((o) => !seen.has(o.order_id)).length} new</b> · ` : ''}Updated ${new Date(listAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} · refreshes by itself</p>
+      <div id="orders" style="margin-top:10px"></div>`;
     const render = () => {
       const q = listQuery.toLowerCase().trim();
       const rows = listCache.filter((o) => (listFilter === 'all' || (listFilter === 'open' ? !['confirmed', 'cancelled'].includes(o.status) : o.status === listFilter))
-        && (!q || [o.order_id, o.name, o.shop, o.city, o.phone].join(' ').toLowerCase().includes(q)));
+        && (!q || [o.order_id, o.name, o.shop, o.city, stateOf(o.order_id), o.phone].join(' ').toLowerCase().includes(q)));
       $('#orders').innerHTML = rows.length ? rows.map((o) => `<button class="card order" type="button" data-id="${esc(o.order_id)}">
-          <div class="row1"><span class="id">${esc(o.order_id)}</span><span class="badge ${esc(o.status)}">${esc(STATUS[o.status] || o.status)}</span></div>
+          <div class="row1"><span class="id">${esc(o.order_id)}${seen.has(o.order_id) ? '' : ' <span class="badge fresh" style="background:var(--accent);color:#fff">NEW</span>'}</span><span class="badge ${esc(o.status)}">${esc(STATUS[o.status] || o.status)}</span></div>
           <div>${esc([o.shop || o.name, o.city].filter(Boolean).join(', '))}${o.shop && o.name ? ` <span class="muted">· ${esc(o.name)}</span>` : ''}</div>
           <div class="row1 small muted"><span>${esc(String(o.created_at).slice(0, 16))} · ${o.lines} items, ${o.packets} pkts${o.needs_sales ? ' · ⚠️ cartons' : ''}</span><b style="color:var(--ink)">${inr(o.grand_total || o.total)}</b></div>
         </button>`).join('') : `<p class="muted">${listCache.length ? 'No orders match.' : 'No website orders yet.'}</p>`;
@@ -182,6 +204,8 @@
   // state: 'ok' | 'oos' | 'removed', limited, replaces (code of the out-of-stock item it replaces) }
   let ed = null;
   async function openOrder(id, msg) {
+    onList = false;
+    markSeen(id);
     setTitle(id); setBar('');
     app.innerHTML = '<p class="muted"><span class="spin"></span> Loading order…</p>';
     const res = await api('get', { order_id: id });
@@ -240,7 +264,7 @@
     app.innerHTML = `<button class="link" type="button" id="back">← All orders</button>
       ${ed.msg ? note(ed.msg.kind, ed.msg.text) : ''}
       <div class="card"><div class="row1" style="display:flex;justify-content:space-between;gap:8px"><h1>${esc(o.shop || o.name || 'Customer')}</h1><span class="badge ${esc(o.status)}">${esc(STATUS[o.status] || o.status)}</span></div>
-        <dl class="kv"><dt>Customer</dt><dd>${esc(c.name || o.name || '-')}${o.city ? ', ' + esc(o.city) : ''}</dd>
+        <dl class="kv"><dt>Customer</dt><dd>${esc(c.name || o.name || '-')}${o.city ? ', ' + esc(o.city) : ''}${stateOf(o.order_id) ? ' (' + esc(stateOf(o.order_id)) + ')' : ''}</dd>
           <dt>Phone</dt><dd><a href="https://wa.me/${esc(o.phone)}" target="_blank" rel="noopener">${esc(nice(o.phone))}</a> (opens WhatsApp)</dd>
           <dt>Price level</dt><dd>${esc(o.level || '-')}</dd>
           <dt>Language</dt><dd>${esc({ en: 'English', hi: 'Hindi', gu: 'Gujarati', ta: 'Tamil', te: 'Telugu' }[o.lang] || o.lang)}</dd>

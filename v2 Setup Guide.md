@@ -224,6 +224,29 @@ A private page where Mahek checks website orders, changes them and tells the cus
 - Orders are saved in the same **RC Orders** table and **Orders** sheet tab as the bot and console use. Each change is written to the order's Notes.
 - Page files: `website/src/orders.html` and `website/src/assets/orders.js`. The API address is `PORTAL_API` in `website/build/config.py`.
 
+## Order numbers, PDF and orders page (evening of 7 Oct 2026)
+
+**Order numbers by state:** RC-001MH, RC-002MH, RC-001GJ …
+- Every state has its own running number starting at 001. The code is the vehicle-plate code (MH Maharashtra, GJ Gujarat, DL Delhi, KA Karnataka …).
+- The bot gives the number when a website order arrives. The customer's thank-you message, the Edit order button, Mahek's alert, the console, the orders page and the PDF all use it.
+- **The website now asks for the State** (a list, required) next to City. The order message has a line like `State: Maharashtra (MH)`.
+- If an order has no state (an old page still open on a customer's phone), the bot works it out from the city. If it can't, the order gets **IN**, e.g. RC-001IN.
+- The counters are in data table **RC Bot State**, row `order_seq`, e.g. `{"MH":12,"GJ":3}`. To start a state from another number, edit that value.
+- The website's own cart ID (RC-1007-K3F9 style) is kept in the new **web_id** column of RC Orders, and the code in the new **state** column. A customer who changes their order keeps the same number.
+- Orders placed before today keep their old IDs. In the console Mahek can type either form, e.g. *RC-012MH* or *RC-1007-K3F9*.
+
+**Order confirmation PDF:**
+- The tagline *Imported Hair Accessories for better selling* is under the logo and in the footer.
+- A green **Chat on WhatsApp +91 93227 02543** button at the top and a WhatsApp help line under the total. Both are clickable links to the bot.
+- The bill-to block shows city and state.
+- Signature block: "For Raj Creation", Mahek's signature, **Mahek Barbhaya (Co-Founder)**, Authorised Signatory.
+- The signature image is stored only in data table **RC Bot State**, row `signature` (base64 JPEG). It is not in this repository or on the website. To change it, replace that value with a new base64 JPEG.
+
+**Orders page:**
+- The list refreshes itself every 30 seconds while it is open, and again when Mahek comes back to the page.
+- Orders she hasn't opened yet are marked **NEW**, with a count at the top ("2 new · Updated 6:15 pm").
+- Search also finds the state code (e.g. *mh*). The order shows the state next to the city.
+
 ## What changed earlier on 7 Oct 2026
 
 1. **Why alerts stopped:** Meta accepted the alert templates but then failed them with error **131042** ("Business eligibility payment issue"). The bot's WhatsApp account has no tax or payment details since AiSensy was removed. Fix it in **Meta Business → Billing hub**. Until then, alerts only reach Mahek inside her 24-hour window.

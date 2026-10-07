@@ -81,6 +81,14 @@
     (window.crypto || window.msCrypto).getRandomValues(r);
     return `RC-${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${[...r].map((x) => ID_CHARS[x % ID_CHARS.length]).join('')}`;
   }
+  // State for the order number (RC-001MH …): the bot numbers orders per state.
+  const STATES = [['AN', 'Andaman and Nicobar Islands'], ['AP', 'Andhra Pradesh'], ['AR', 'Arunachal Pradesh'], ['AS', 'Assam'], ['BR', 'Bihar'], ['CH', 'Chandigarh'],
+    ['CG', 'Chhattisgarh'], ['DD', 'Dadra and Nagar Haveli and Daman and Diu'], ['DL', 'Delhi'], ['GA', 'Goa'], ['GJ', 'Gujarat'], ['HR', 'Haryana'], ['HP', 'Himachal Pradesh'],
+    ['JK', 'Jammu and Kashmir'], ['JH', 'Jharkhand'], ['KA', 'Karnataka'], ['KL', 'Kerala'], ['LA', 'Ladakh'], ['LD', 'Lakshadweep'], ['MP', 'Madhya Pradesh'], ['MH', 'Maharashtra'],
+    ['MN', 'Manipur'], ['ML', 'Meghalaya'], ['MZ', 'Mizoram'], ['NL', 'Nagaland'], ['OD', 'Odisha'], ['PY', 'Puducherry'], ['PB', 'Punjab'], ['RJ', 'Rajasthan'], ['SK', 'Sikkim'],
+    ['TN', 'Tamil Nadu'], ['TG', 'Telangana'], ['TR', 'Tripura'], ['UP', 'Uttar Pradesh'], ['UK', 'Uttarakhand'], ['WB', 'West Bengal']];
+  const stateName = (code) => (STATES.find((x) => x[0] === code) || [])[1] || '';
+  const custNow = () => ({ name: $('#c-name').value.trim(), city: $('#c-city').value.trim(), state: $('#c-state').value });
   const ORDER_DAYS = 7;
   function currentOrder() { // { id, sent, edit } while this cart belongs to an order, else null
     const o = store.get('rc_order', null);
@@ -563,6 +571,8 @@
       + `<p class="notice ship">${esc(tr('shipNote'))}</p>`
       + `<label class="field"><span>${esc(tr('fName'))}</span><input id="c-name" autocomplete="organization" value="${esc(cust.name || '')}" placeholder="${esc(tr('fNamePh'))}"></label>`
       + `<label class="field"><span>${esc(tr('fCity'))}</span><input id="c-city" autocomplete="address-level2" value="${esc(cust.city || '')}" placeholder="${esc(tr('fCityPh'))}"></label>`
+      + `<label class="field"><span>${esc(tr('fState'))}</span><select id="c-state" autocomplete="address-level1" required><option value="">${esc(tr('fStatePh'))}</option>`
+      + STATES.map(([c, n]) => `<option value="${c}"${cust.state === c ? ' selected' : ''}>${esc(n)}</option>`).join('') + '</select></label>'
       + `<button class="btn wa block" type="button" id="send-order"${o.block ? ' disabled' : ''}>${esc(tr(o.block ? 'sendBlocked' : o.sales ? 'sendSales' : ord && (ord.sent || ord.edit) ? 'sendUpdate' : 'send'))}</button>`
       + `<p class="muted small" style="margin-top:8px">${esc(tr('sendNote'))}</p>`
       + `<button class="link-btn" type="button" id="clear-order">${esc(tr('clear'))}</button>`;
@@ -573,7 +583,7 @@
   // No emoji before "NEW ORDER": WhatsApp Desktop turns some emoji in a wa.me link into "�".
   function orderMessage(id, update) {
     const o = orderSummary(), c = o.kind && CARTON[o.kind];
-    const name = ($('#c-name')?.value || '').trim(), city = ($('#c-city')?.value || '').trim();
+    const name = ($('#c-name')?.value || '').trim(), city = ($('#c-city')?.value || '').trim(), state = $('#c-state')?.value || '';
     const lines = o.lines.map((l, i) => {
       const u = unit(l.r, o.t);
       return `${i + 1}) ${l.r.code}${l.r.desc ? ` (${l.r.desc})` : ''} – ${l.n} ${isBox(l.r) ? 'box' : 'pkt'} × ${l.r.pkt} dz × ${inr(u)} = ${inr(l.n * l.r.pkt * u)}`;
@@ -588,6 +598,7 @@
       `Price level: ${I18N.text['type.' + o.t.id].en}`,
       `Name / Shop: ${name || '-'}`,
       `City: ${city || '-'}`,
+      ...(state ? [`State: ${stateName(state)} (${state})`] : []),
       `Language: ${(I18N.languages.find((x) => x.id === L) || {}).en || 'English'}`,
       '',
       ...lines,
@@ -787,7 +798,8 @@
       if (t.closest('[data-close]')) { t.closest('dialog').close(); return; }
       if (t.closest('.cart-btn') || t.closest('#ob-open')) { $('#cart-body').scrollTop = 0; renderCart(); $('#cart').showModal(); return; }
       if (t.id === 'send-order') {
-        store.set('rc_cust', { name: $('#c-name').value.trim(), city: $('#c-city').value.trim() });
+        store.set('rc_cust', custNow());
+        if (!$('#c-state').value) { toast(tr('stateNeeded')); $('#c-state').focus(); return; }
         const prev = currentOrder();
         const id = prev ? prev.id : newOrderId();
         window.open(waUrl(orderMessage(id, !!(prev && (prev.sent || prev.edit)))), '_blank', 'noopener');
@@ -840,7 +852,7 @@
       if (e.target.matches('input[data-qty]')) setTimeout(() => e.target.select(), 0);
     });
     $('#cart').addEventListener('input', (e) => {
-      if (e.target.id === 'c-name' || e.target.id === 'c-city') store.set('rc_cust', { name: $('#c-name').value.trim(), city: $('#c-city').value.trim() });
+      if (['c-name', 'c-city', 'c-state'].includes(e.target.id)) store.set('rc_cust', custNow());
     });
 
     for (const a of $$('a[data-wa]')) { a.href = waUrl(a.dataset.wa); a.target = '_blank'; a.rel = 'noopener'; }
@@ -852,14 +864,14 @@
   // (After "#", so the details never reach the web server.)
   // Links from the WhatsApp bot carry the customer's details: ?shop=…&city=…&type=… (older links used #shop=…).
   function custFromLink() {
-    const KEYS = ['shop', 'city', 'type'];
+    const KEYS = ['shop', 'city', 'type', 'state'];
     const q = new URLSearchParams(location.search);
     const h = /^#(shop|city|type)=/.test(location.hash) ? new URLSearchParams(location.hash.slice(1)) : null;
     const get = (k) => (q.get(k) || (h && h.get(k)) || '').trim();
     if (!h && !KEYS.some((k) => q.has(k))) return;
-    const shop = get('shop').slice(0, 80), city = get('city').slice(0, 60);
+    const shop = get('shop').slice(0, 80), city = get('city').slice(0, 60), state = get('state').toUpperCase();
     const cur = store.get('rc_cust', {});
-    store.set('rc_cust', { name: shop || cur.name || '', city: city || cur.city || '' });
+    store.set('rc_cust', { name: shop || cur.name || '', city: city || cur.city || '', state: stateName(state) ? state : cur.state || '' });
     const ty = get('type');
     if (typeById[ty]) { typeId = ty; shownMemo = null; store.set('rc_type', ty); }
     KEYS.forEach((k) => q.delete(k)); // keep ?lang= and ?q=, tidy the rest out of the address bar
