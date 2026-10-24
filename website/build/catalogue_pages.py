@@ -139,3 +139,19 @@ PAGES = {
         (20, ["RC 264"], ""),
     ],
 }
+
+# New items with a photo in a photos folder (file name = code) but no row on the rate sheet yet.
+# They show on the catalogue with "Price on request". Once the item gets a row on the rate sheet
+# (same code, same category), its price and Add button appear on the card by themselves.
+# code: (category, note)
+NEW_ITEMS = {
+    "1105": ("scrunchies", ""),
+    "1125": ("scrunchies", ""),
+    "1126": ("scrunchies", ""),
+    "1127": ("scrunchies", ""),
+    "340": ("scrunchies", ""),
+    "439": ("scrunchies", ""),
+    "845": ("scrunchies", ""),
+    "935": ("scrunchies", ""),
+    "CH-50": ("clutchers", "Fur chimta · T-800"),
+}

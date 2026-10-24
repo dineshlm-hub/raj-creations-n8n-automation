@@ -24,7 +24,7 @@ import pymupdf
 from PIL import Image
 
 import config
-from catalogue_pages import CATEGORIES, PAGES
+from catalogue_pages import CATEGORIES, NEW_ITEMS, PAGES
 
 HERE = Path(__file__).resolve().parent
 SITE = HERE.parent
@@ -192,22 +192,31 @@ def render_photos():
     found, unmatched = {}, []
     files = sorted((f for d in photo_dirs() for f in d.rglob("*") if f.suffix.lower() in PHOTO_EXT),
                    key=lambda f: (f.stem.lower(), str(f)))
-    for f in files:
-        m = re.match(r"^(.*?)(?:\s*\((\d+)\)|_(\d+))?$", f.stem.strip())
-        stem = m.group(1).strip()
-        row = exact.get(norm(stem))
+    def find(code):
+        row = exact.get(norm(code))
         if not row:
-            cands = {id(r): r for k in code_keys(stem) for r in loose.get(k, [])}
+            cands = {id(r): r for k in code_keys(code) for r in loose.get(k, [])}
             row = next(iter(cands.values())) if len(cands) == 1 else None  # only when it can mean one item
-        if not row:
+        return row
+    extra = {norm(k): (k, v) for k, v in NEW_ITEMS.items()}
+    for f in files:
+        # "D-01.jpg", "D-01 (2).jpg" / "D-01_2.jpg" (2nd photo), "CH-01 ( T-900).jpeg" (other code of the same item)
+        m = re.match(r"^(.*?)(?:\s*\(\s*([^)]*?)\s*\))?(?:_(\d+))?$", f.stem.strip())
+        stem, inner = m.group(1).strip(), (m.group(2) or "").strip()
+        alt = "" if inner.isdigit() else inner
+        row = find(stem) or (alt and find(alt))
+        if row:
+            k = str(row.get("Category", "")).lower()
+            cat, code = next((v for key, v in SHEET_CAT.items() if key in k), None), str(row["Code"]).strip()
+        elif norm(stem) in extra or (alt and norm(alt) in extra):
+            code, (cat, _) = extra.get(norm(stem)) or extra[norm(alt)]
+        else:
             unmatched.append(f.name)
             continue
-        k = str(row.get("Category", "")).lower()
-        cat = next((v for key, v in SHEET_CAT.items() if key in k), None)
         if cat not in {c["id"] for c in CATEGORIES}:
             unmatched.append(f.name)
             continue
-        key = (cat, str(row["Code"]).strip())
+        key = (cat, code)
         n = len(found.get(key, [])) + 1
         name = f"x-{slug(key[1])}" + (f"-{n}" if n > 1 else "")
         out_dir = OUT / "img" / cat
@@ -238,6 +247,7 @@ def add_photos(catalogue, found):
             it["imgs"].extend(imgs)
         else:
             desc = next((str(r.get("Description") or "") for r in build_rates() if str(r.get("Code", "")).strip() == code), "")
+            desc = desc or NEW_ITEMS.get(code, ("", ""))[1]
             c["items"].append({"id": slug(cat + "-" + code), "cat": cat, "codes": [code], "note": desc, "imgs": imgs})
 
 

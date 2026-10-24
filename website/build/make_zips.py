@@ -13,8 +13,9 @@ OUT = SITE / "public"
 
 
 def pack(name, skip_photos):
-    def photo(f):  # the catalogue photos (…-t / …-f.webp); the small copies (…-s / …-m.webp, …-p.jpg) are always included
-        return f.relative_to(OUT).parts[0] == "img" and not f.stem.endswith(("-s", "-m", "-p"))
+    def photo(f):  # the catalogue PDF page photos (…-t / …-f.webp); the small copies (…-s / …-m.webp, …-p.jpg) and the
+        # item photos from the photos folders (x-….webp, few and often new) are always included
+        return f.relative_to(OUT).parts[0] == "img" and not f.stem.endswith(("-s", "-m", "-p")) and not f.name.startswith("x-")
     files = sorted(f for f in OUT.rglob("*") if f.is_file() and not (skip_photos and photo(f)))
     with zipfile.ZipFile(SITE / name, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for f in files:
