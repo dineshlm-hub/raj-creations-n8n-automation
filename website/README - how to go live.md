@@ -4,7 +4,7 @@
 | File / folder | What it is |
 |---|---|
 | `rajcreation.info - upload to public_html.zip` | The finished website. Upload this. |
-| `Website Rates (for Google Sheet).xlsx` | The master price list (139 items). Review it, then import it into Google Sheets. |
+| `Website Rates (for Google Sheet).xlsx` | The master price list (138 items + the hidden carton row; base rates from the 24 Oct 2026 list). Review it, then import it into Google Sheets. |
 | `public/` | The same website, unzipped (used for previewing). |
 | `src/`, `build/` | The source files and build script. Needed only when the site changes. |
 
@@ -17,7 +17,7 @@ The WhatsApp bot will send this link to customers. Anyone who opens it once also
 ## Step 1: Review the price list
 Open **Website Rates (for Google Sheet).xlsx**. It replaces the earlier "Item code check" file.
 - **Yellow rows:** read the Note column and fix anything that's wrong.
-- **Red rows:** catalogue photos that have no price yet (RC 200, 968, 959, RC 307, RC 271, RC 262). Fill in Code, Rate per dozen and Packet (dozen). Leave them empty if they should show "Price on request".
+- **Removed 24 Oct 2026:** RC 200, 968, 959, RC 307, RC 271 and RC 262 had a catalogue photo but no price, and are not on the new rate list. They are off the site.
 - **To hide an item:** set **Show** to `N`.
 - **Catalogue item** links a price to its photo. Type the code exactly as it's printed on the catalogue photo.
 
@@ -67,5 +67,6 @@ Item codes stay as printed. Item notes like "4 colour range available" are trans
 |---|---|
 | Prices, packets, hide/show an item | Edit the Google Sheet. Nothing else needed. |
 | New catalogue PDF pages | Update `build/catalogue_pages.py`, run `python build.py --images`, then upload the new zip. |
+| New item photos | Put the photos in `website/photos/` (or a `website/New items …` folder). Name each file after its item code exactly as on the rate sheet: `D-01.jpg`, `RC-610.jpg`, `430.jpeg`. More photos of one item: `D-01 (2).jpg`. Run `python build.py` and upload the new zip. The build lists any file whose name matches no item. A photo for an item that already has a catalogue page is added to that item. Otherwise the photo becomes a new card at the end of its category. |
 | New secret link (e.g. it got shared too widely) | Change `PRICE_TOKEN` in `build/config.py`, rebuild, upload, and update the link in the bot. |
 | Business types (increase, minimum order), carton sizes, ₹400 carton fee, GST % | Edit `BUSINESS_TYPES`, `CARTON`, `GST_PCT` in `build/config.py`, rebuild, upload. The bot texts (minimums in the list and messages) live in the n8n "Build Context" node. |

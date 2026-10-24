@@ -182,9 +182,10 @@
 
   function linkRates() {
     for (const r of rates) {
-      if (!r.link) continue;
-      const it = items.find((i) => i.cat === r.cat && i.codes.some((c) => norm(c) === r.link))
-        || items.find((i) => i.codes.some((c) => norm(c) === r.link));
+      // "Catalogue item" column, else the item's own code (photos added from the photos folder are named by code)
+      const it = (r.link && (items.find((i) => i.cat === r.cat && i.codes.some((c) => norm(c) === r.link))
+        || items.find((i) => i.codes.some((c) => norm(c) === r.link))))
+        || items.find((i) => i.cat === r.cat && i.codes.some((c) => norm(c) === norm(r.code)));
       if (it) r.item = it;
     }
     // order: catalogue order first, then items without a photo by code

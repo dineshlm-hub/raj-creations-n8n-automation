@@ -5,6 +5,7 @@
 
 Inputs:
     ../../*.pdf                               the three catalogue PDFs (see catalogue_pages.py)
+    ../photos/, ../New items*/                item photos, file name = item code (D-01.jpg, RC-610 (2).jpg)
     ../Website Rates (for Google Sheet).xlsx  fallback prices, used until the Google Sheet is connected
     config.py                                 secret price-page token, Google Sheet CSV link, phone numbers
 """
@@ -158,6 +159,96 @@ def monogram():
     rgba[..., 0], rgba[..., 1], rgba[..., 2] = 0x24, 0x1c, 0x22
     rgba[..., 3] = (mark * 255).astype(np.uint8)
     return Image.fromarray(rgba, "RGBA")
+
+
+PHOTO_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+SHEET_CAT = {"clutch": "clutchers", "bow": "tie-bow", "scrunch": "scrunchies", "rubber": "scrunchies", "band": "scrunchies", "donut": "scrunchies"}
+
+
+def photo_dirs():
+    """Folders of item photos: website/photos/ and any website/New items …/ folder. The file name is the item code
+    (D-01.jpg, RC-610.jpg, 430.jpeg); more photos of the same item: "D-01 (2).jpg" or "D-01_2.jpg"."""
+    return [d for d in [SITE / "photos", *sorted(SITE.glob("New items*"))] if d.is_dir()]
+
+
+def code_keys(code):
+    """Ways an item code can be written: D-01 = D01 = D1, RC-610 = 610."""
+    n = norm(code)
+    c = re.sub(r"^(RC|RJ|RAJ|RT|TESLA|T)(?=\d)", "", n)
+    z = lambda s: re.sub(r"(^|[A-Z])0+(?=\d)", r"\1", s)
+    return [k for k in dict.fromkeys([n, z(n), c, z(c)]) if k]
+
+
+def render_photos():
+    """Item photos from the photo folders -> img/<cat>/x-<code>[-n]-t.webp / -f.webp, matched to the rate sheet by code.
+    Returns {(cat, rate code): [img, …]} and the files that did not match any item code."""
+    rows = [r for r in build_rates() if str(r.get("Code", "")).strip()]
+    exact = {}
+    loose = {}
+    for r in rows:
+        exact.setdefault(norm(r["Code"]), r)
+        for k in code_keys(r["Code"]):
+            loose.setdefault(k, []).append(r)
+    found, unmatched = {}, []
+    files = sorted((f for d in photo_dirs() for f in d.rglob("*") if f.suffix.lower() in PHOTO_EXT),
+                   key=lambda f: (f.stem.lower(), str(f)))
+    for f in files:
+        m = re.match(r"^(.*?)(?:\s*\((\d+)\)|_(\d+))?$", f.stem.strip())
+        stem = m.group(1).strip()
+        row = exact.get(norm(stem))
+        if not row:
+            cands = {id(r): r for k in code_keys(stem) for r in loose.get(k, [])}
+            row = next(iter(cands.values())) if len(cands) == 1 else None  # only when it can mean one item
+        if not row:
+            unmatched.append(f.name)
+            continue
+        k = str(row.get("Category", "")).lower()
+        cat = next((v for key, v in SHEET_CAT.items() if key in k), None)
+        if cat not in {c["id"] for c in CATEGORIES}:
+            unmatched.append(f.name)
+            continue
+        key = (cat, str(row["Code"]).strip())
+        n = len(found.get(key, [])) + 1
+        name = f"x-{slug(key[1])}" + (f"-{n}" if n > 1 else "")
+        out_dir = OUT / "img" / cat
+        out_dir.mkdir(parents=True, exist_ok=True)
+        full, thumb = out_dir / f"{name}-f.webp", out_dir / f"{name}-t.webp"
+        from PIL import ImageOps
+        if not (full.exists() and thumb.exists() and full.stat().st_mtime >= f.stat().st_mtime):
+            im = ImageOps.exif_transpose(Image.open(f)).convert("RGB")
+            if im.width > FULL_W:
+                im = im.resize((FULL_W, round(FULL_W * im.height / im.width)), Image.LANCZOS)
+            im.save(full, "WEBP", quality=72, method=6)
+            im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(thumb, "WEBP", quality=68, method=6)
+            print(f"  photo {f.name} -> {key[1]}")
+        w, h = Image.open(full).size
+        found.setdefault(key, []).append({"t": f"img/{cat}/{name}-t.webp", "f": f"img/{cat}/{name}-f.webp", "w": w, "h": h})
+    return found, unmatched
+
+
+def add_photos(catalogue, found):
+    """Put the folder photos on the catalogue: as extra photos of an item that already has a catalogue page,
+    or as a new item at the end of its category."""
+    links = {(str(r.get("Code", "")).strip()): norm(r.get("Catalogue item", "")) for r in build_rates()}
+    for (cat, code), imgs in found.items():
+        c = next(x for x in catalogue["categories"] if x["id"] == cat)
+        want = {links.get(code) or "", norm(code)} - {""}
+        it = next((i for i in c["items"] if want & {norm(x) for x in i["codes"]}), None)
+        if it:
+            it["imgs"].extend(imgs)
+        else:
+            desc = next((str(r.get("Description") or "") for r in build_rates() if str(r.get("Code", "")).strip() == code), "")
+            c["items"].append({"id": slug(cat + "-" + code), "cat": cat, "codes": [code], "note": desc, "imgs": imgs})
+
+
+def clean_images(catalogue):
+    """Remove item images that are no longer used (pages taken off the catalogue, photos removed from the folder)."""
+    stem = lambda name: re.sub(r"-(t|f|s|m|p)\.(webp|jpg)$", "", name)
+    used = {(im[k].split("/")[1], stem(im[k].split("/")[-1])) for c in catalogue["categories"] for it in c["items"] for im in it["imgs"] for k in ("t", "f")}
+    for cat in CATEGORIES:
+        for f in (OUT / "img" / cat["id"]).glob("*"):
+            if (cat["id"], stem(f.name)) not in used:
+                f.unlink()
 
 
 def build_catalogue(sizes):
@@ -380,6 +471,11 @@ def main():
     render_logo()
     render_logo_mark()
     catalogue = build_catalogue(sizes)
+    found, unmatched = render_photos()
+    add_photos(catalogue, found)
+    clean_images(catalogue)
+    if unmatched:
+        print(f"  photos not matching any item code on the rate sheet (skipped): {', '.join(unmatched)}")
     version_images(catalogue)
     nav = render_nav_icons(catalogue)
     (OUT / "data").mkdir(exist_ok=True)

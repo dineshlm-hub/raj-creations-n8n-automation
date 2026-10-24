@@ -3,6 +3,9 @@
 Codes were read from the PDF text; six clutcher pages carry the code only inside
 the photo, so those were typed in by hand. Edit this file when a catalogue changes,
 then run build.py again.
+
+Pages of items that are no longer on the rate list (24 Oct 2026: RC 200, 959, RC 307,
+RC 271, RC 262) are left out, so they are not on the site.
 """
 
 CATEGORIES = [
@@ -32,7 +35,6 @@ PAGES = {
     "clutchers": [
         (1, ["CH-01"], ""),
         (2, ["CH-01"], ""),
-        (3, ["RC 200"], ""),
         (4, ["RC 300"], ""),
         (5, ["RC 500"], ""),
         (6, ["RC 600"], ""),
@@ -70,7 +72,7 @@ PAGES = {
         (9, ["986"], "4 colour range available"),
         (10, ["952"], "6 colour range available"),
         (11, ["960"], "3 colour range available"),
-        (12, ["968", "965"], "968: 6 colour range · 965: more than 6 designs"),
+        (12, ["965"], "More than 6 designs available"),  # page also shows 968, which is not on the rate list
         (13, ["993"], "More than 5 designs available"),
         (14, ["36 PC NYLON RUBBER"], "36 pc nylon rubber bands"),
         (15, ["RC-601"], "Tier rubber · 12 colour range available"),
@@ -89,7 +91,6 @@ PAGES = {
         (28, ["MOBILON"], "4 colour range available"),
         (29, ["100 GIFT BOX"], "Gift box · new colours & designs all the time"),
         (30, ["300"], "New colours & designs all the time"),
-        (31, ["959"], "6 colour range available"),
         (32, ["996"], "4 colour range available"),
         (33, ["967"], "6 colour range available"),
         (34, ["335"], "9 colour range available"),
@@ -122,11 +123,9 @@ PAGES = {
         (1, ["RC 258"], "More than 3 designs available"),
         (2, ["RC 259"], "4 colour range available"),
         (3, ["RC 278"], "6 designs available"),
-        (4, ["RC 307"], "4 colour range available"),
         (5, ["RC 252"], "3 colour range available"),
         (6, ["RC 267"], "More than 4 designs available"),
         (7, ["RC 253"], "More than 2 colour range available"),
-        (8, ["RC 271"], "4 colour range available"),
         (9, ["RC 274"], "More than 3 colour / design range available"),
         (10, ["RC 274"], "More than 3 colour / design range available"),
         (11, ["RC 275"], "More than 4 colour / design range available"),
@@ -135,7 +134,6 @@ PAGES = {
         (14, ["RC 511"], "5 colour range available"),
         (15, ["RC 256"], "4 design range available"),
         (16, ["RC 266"], "4 design range available"),
-        (17, ["RC 262"], "4 design range available · different pearl stones"),
         (18, ["RC 265"], ""),
         (19, ["RC 255"], ""),
         (20, ["RC 264"], ""),
