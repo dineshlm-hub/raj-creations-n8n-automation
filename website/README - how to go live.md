@@ -4,7 +4,7 @@
 | File / folder | What it is |
 |---|---|
 | `rajcreation.info - upload to public_html.zip` | The finished website. Upload this. |
-| `Website Rates (for Google Sheet).xlsx` | The master price list (138 items + the hidden carton row; base rates from the 24 Oct 2026 list). Review it, then import it into Google Sheets. |
+| `Website Rates (for Google Sheet).xlsx` | The master price list: 114 items, only those with a photo, priced from the RC & RT merged list of 29 Oct 2026, plus the hidden carton row. The rate is the wholesale (carton) price; the other levels add their % to it. Review it, then import it into Google Sheets. |
 | `public/` | The same website, unzipped (used for previewing). |
 | `src/`, `build/` | The source files and build script. Needed only when the site changes. |
 
@@ -17,7 +17,7 @@ The WhatsApp bot will send this link to customers. Anyone who opens it once also
 ## Step 1: Review the price list
 Open **Website Rates (for Google Sheet).xlsx**. It replaces the earlier "Item code check" file.
 - **Yellow rows:** read the Note column and fix anything that's wrong.
-- **Removed 24 Oct 2026:** RC 200, 968, 959, RC 307, RC 271 and RC 262 had a catalogue photo but no price, and are not on the new rate list. They are off the site.
+- **29 Oct 2026:** only items with a photo are on the site. Photo items with no rate on the merged list (TESLA 710, 986, 991, 36 PC NYLON RUBBER, 1126, 1127, RC 253, RC 511, RC 265) show "Price on request". RC 307 and RC 271 are not on the merged list, so they are off the site.
 - **To hide an item:** set **Show** to `N`.
 - **Catalogue item** links a price to its photo. Type the code exactly as it's printed on the catalogue photo.
 

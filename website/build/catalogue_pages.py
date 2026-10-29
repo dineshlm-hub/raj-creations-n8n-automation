@@ -4,8 +4,8 @@ Codes were read from the PDF text; six clutcher pages carry the code only inside
 the photo, so those were typed in by hand. Edit this file when a catalogue changes,
 then run build.py again.
 
-Pages of items that are no longer on the rate list (24 Oct 2026: RC 200, 959, RC 307,
-RC 271, RC 262) are left out, so they are not on the site.
+Pages of items that are not on the rate list (RC 307, RC 271) are left out, so they are not
+on the site. RC 200, 959, 968 and RC 262 are back since 29 Oct 2026: the merged rate list has them.
 """
 
 CATEGORIES = [
@@ -35,6 +35,7 @@ PAGES = {
     "clutchers": [
         (1, ["CH-01"], ""),
         (2, ["CH-01"], ""),
+        (3, ["RC 200"], ""),
         (4, ["RC 300"], ""),
         (5, ["RC 500"], ""),
         (6, ["RC 600"], ""),
@@ -72,7 +73,7 @@ PAGES = {
         (9, ["986"], "4 colour range available"),
         (10, ["952"], "6 colour range available"),
         (11, ["960"], "3 colour range available"),
-        (12, ["965"], "More than 6 designs available"),  # page also shows 968, which is not on the rate list
+        (12, ["968", "965"], "968: 6 colour range · 965: more than 6 designs"),
         (13, ["993"], "More than 5 designs available"),
         (14, ["36 PC NYLON RUBBER"], "36 pc nylon rubber bands"),
         (15, ["RC-601"], "Tier rubber · 12 colour range available"),
@@ -91,6 +92,7 @@ PAGES = {
         (28, ["MOBILON"], "4 colour range available"),
         (29, ["100 GIFT BOX"], "Gift box · new colours & designs all the time"),
         (30, ["300"], "New colours & designs all the time"),
+        (31, ["959"], "6 colour range available"),
         (32, ["996"], "4 colour range available"),
         (33, ["967"], "6 colour range available"),
         (34, ["335"], "9 colour range available"),
@@ -134,24 +136,20 @@ PAGES = {
         (14, ["RC 511"], "5 colour range available"),
         (15, ["RC 256"], "4 design range available"),
         (16, ["RC 266"], "4 design range available"),
+        (17, ["RC 262"], "4 design range available · different pearl stones"),
         (18, ["RC 265"], ""),
         (19, ["RC 255"], ""),
         (20, ["RC 264"], ""),
     ],
 }
 
-# New items with a photo in a photos folder (file name = code) but no row on the rate sheet yet.
-# They show on the catalogue with "Price on request". Once the item gets a row on the rate sheet
-# (same code, same category), its price and Add button appear on the card by themselves.
+# Photos in a photos folder whose code has no row on the rate sheet (file name = code).
+# They show on the catalogue with "Price on request" (986: extra photo of the catalogue item).
+# Once the item gets a row on the rate sheet (same code, same category), its price and Add button
+# appear on the card by themselves.
 # code: (category, note)
 NEW_ITEMS = {
-    "1105": ("scrunchies", ""),
-    "1125": ("scrunchies", ""),
+    "986": ("scrunchies", ""),
     "1126": ("scrunchies", ""),
     "1127": ("scrunchies", ""),
-    "340": ("scrunchies", ""),
-    "439": ("scrunchies", ""),
-    "845": ("scrunchies", ""),
-    "935": ("scrunchies", ""),
-    "CH-50": ("clutchers", "Fur chimta · T-800"),
 }

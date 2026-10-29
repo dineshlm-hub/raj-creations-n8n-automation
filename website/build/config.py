@@ -28,7 +28,7 @@ BUSINESS_TYPES = [
     {"id": "other", "pct": 30, "mov": 5000},
     {"id": "reseller", "pct": 25, "mov": 5000},
     {"id": "retailer", "pct": 15, "mov": 12000, "open": True},
-    {"id": "wholesaler", "add": 3, "carton": True, "open": True},
+    {"id": "wholesaler", "pct": 0, "carton": True, "open": True},  # the rate sheet is the wholesale price (29 Oct 2026: the +₹3 is in the rates)
 ]
 # Wholesale cartons: all boxes (scrunchies, rubber bands, bun donuts) or all packets (other items), never mixed.
 # A carton is exactly 90 boxes or exactly 70 packets. Mixed carts or any other quantity go to the sales associate.
