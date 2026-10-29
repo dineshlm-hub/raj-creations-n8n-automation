@@ -959,10 +959,33 @@
     renderOrderBar();
   }
 
-  // Installable as an app from Chrome: the service worker (site root) only adds an offline page.
+  // Installable as an app, and works offline (service worker at the site root, see sw.js). The installed app also
+  // saves every catalogue photo once; a website visitor keeps only what they looked at.
   if ('serviceWorker' in navigator && window.isSecureContext) {
-    addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(() => navigator.serviceWorker.ready).then((reg) => {
+        const app = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+        if (app && navigator.onLine && reg.active) reg.active.postMessage({ type: 'save-all' });
+      }).catch(() => {});
+    });
   }
+  // Offline: say that the catalogue and prices are the saved copy.
+  function offlineBar() {
+    let bar = $('#offline-bar');
+    if (navigator.onLine) { if (bar) bar.remove(); return; }
+    if (!bar) {
+      bar = document.createElement('p');
+      bar.id = 'offline-bar';
+      bar.className = 'notice warn';
+      bar.setAttribute('role', 'status');
+      bar.style.cssText = 'position:sticky;top:0;z-index:30;margin:0;border-radius:0;text-align:center';
+      document.body.prepend(bar);
+    }
+    bar.textContent = tr('offline');
+  }
+  addEventListener('online', offlineBar);
+  addEventListener('offline', offlineBar);
+  offlineBar();
 
   init();
 })();

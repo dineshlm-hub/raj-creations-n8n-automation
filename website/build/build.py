@@ -165,9 +165,37 @@ def render_app_icons():
         ],
     }
     (OUT / "manifest.webmanifest").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf8")
-    for name in ("sw.js", "offline.html"):  # the service worker must sit at the site root so it covers every page
-        shutil.copy(SRC / name, OUT / name)
-    return {"v_manifest": ver(OUT / "manifest.webmanifest"), "apple_icon": apple}
+    # Installed from the rate list: the app opens on the rate list, with prices. (An app added to an iPhone home screen
+    # has its own storage, so it would not know the secret rate-list link if it opened on the catalogue.)
+    rates_dir = OUT / "p" / config.PRICE_TOKEN
+    rates_dir.mkdir(parents=True, exist_ok=True)
+    rates_url = f"/p/{config.PRICE_TOKEN}/"
+    rates_manifest = dict(manifest, id=rates_url, start_url=rates_url, name="Raj Creation – Rate List",
+                          description="Raj Creation wholesale rate list – order on WhatsApp.")
+    (rates_dir / "app.webmanifest").write_text(json.dumps(rates_manifest, ensure_ascii=False, indent=1), encoding="utf8")
+    shutil.copy(SRC / "offline.html", OUT / "offline.html")
+    return {"manifest": f"/manifest.webmanifest?v={ver(OUT / 'manifest.webmanifest')}", "apple_icon": apple,
+            "manifest_rates": f"{rates_url}app.webmanifest?v={ver(rates_dir / 'app.webmanifest')}"}
+
+
+def write_service_worker(catalogue, fill, nav):
+    """sw.js at the site root (so it covers every page), with the files to save for offline use:
+    CORE = pages, scripts, fonts, data (saved at once); PHOTOS = catalogue photos at phone size (the installed app
+    saves them once). The secret rate-list page is never listed here: sw.js can be read by anyone."""
+    core = ["/", *[f"/{c['id']}/" for c in catalogue["categories"]], "/offline.html", "/data/catalogue.json",
+            f"/assets/app.js?v={fill['v_app']}", f"/assets/i18n.js?v={fill['v_i18n']}", f"/assets/logo-mark.webp?v={fill['v_logo']}",
+            f"/assets/fonts/inter-latin.woff2?v={fill['v_inter']}", f"/assets/fonts/inter-rupee.woff2?v={fill['v_rupee']}",
+            f"/assets/fonts/playfair-latin.woff2?v={fill['v_playfair']}", fill["manifest"], fill["apple_icon"],
+            *["/" + v for v in nav.values()]]
+    photos = list(dict.fromkeys("/" + im[k] for c in catalogue["categories"] for it in c["items"] for im in it["imgs"] for k in ("s", "t")))
+    lists = json.dumps(core) + json.dumps(photos)
+    version = hashlib.md5((lists + (SRC / "sw.js").read_text(encoding="utf8")).encode()).hexdigest()[:8]
+    js = (SRC / "sw.js").read_text(encoding="utf8").replace("'__VERSION__'", json.dumps(version)) \
+        .replace("__CORE__", json.dumps(core)).replace("__PHOTOS__", json.dumps(photos))
+    assert "__" not in js.split("// The secret")[1].replace("'/__photos-saved'", ""), "sw.js placeholders left"
+    assert config.PRICE_TOKEN not in js, "the secret rate-list link must not be in sw.js"
+    (OUT / "sw.js").write_text(js, encoding="utf8")
+    return len(core), len(photos)
 
 
 def monogram():
@@ -511,7 +539,7 @@ def render_pages(catalogue, fill):
              robots="index,follow")
     page("orders.html", OUT / "orders" / "index.html", portal_api=config.PORTAL_API, price_token=config.PRICE_TOKEN,
          types=json.dumps(config.BUSINESS_TYPES), gst=config.GST_PCT)
-    page("rates.html", OUT / "p" / config.PRICE_TOKEN / "index.html",
+    page("rates.html", OUT / "p" / config.PRICE_TOKEN / "index.html", manifest=fill["manifest_rates"],
          title="Rate List – Raj Creation", description="Raj Creation wholesale rate list.",
          ogimage=catalogue["categories"][0]["items"][0]["imgs"][0]["f"], page="rates", cat="", robots="noindex,nofollow")
 
@@ -557,6 +585,7 @@ def main():
                       ("v_inter", "assets/fonts/inter-latin.woff2"), ("v_rupee", "assets/fonts/inter-rupee.woff2"),
                       ("v_playfair", "assets/fonts/playfair-latin.woff2"), ("v_orders", "assets/orders.js")):
         fill[key] = ver(OUT / path)
+    n_core, n_photos = write_service_worker(catalogue, fill, nav)
     for name in (".htaccess", "robots.txt", "404.html"):
         if (SRC / name).exists():
             shutil.copy(SRC / name, OUT / name)
@@ -568,6 +597,7 @@ def main():
     size_mb = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file()) / 1e6
     print(f"done: {n_items} catalogue items, site size {size_mb:.1f} MB -> {OUT}")
     print(f"price page: {config.SITE_URL}/p/{config.PRICE_TOKEN}/")
+    print(f"offline app: {n_core} core files, {n_photos} photos for the installed app")
 
 
 if __name__ == "__main__":
