@@ -31,7 +31,7 @@ self.addEventListener('activate', (e) => {
 // The installed app asks for every catalogue photo once per version (a few at a time, skipping ones already saved).
 self.addEventListener('message', (e) => {
   if (!e.data || e.data.type !== 'save-all') return;
-  e.waitUntil((async () => {
+  const job = (async () => {
     const meta = await caches.open(CORE_CACHE);
     if (await meta.match('/__photos-saved')) return;
     const c = await caches.open(STATIC);
@@ -44,7 +44,8 @@ self.addEventListener('message', (e) => {
     const missing = (await Promise.all(PHOTOS.map((u) => c.match(u)))).filter((r) => !r).length;
     if (!missing) await meta.put('/__photos-saved', new Response('1'));
     trim();
-  })());
+  })();
+  if (e.waitUntil) e.waitUntil(job); // older Safari: no waitUntil here, the download still runs (and resumes next time)
 });
 
 self.addEventListener('fetch', (e) => {
