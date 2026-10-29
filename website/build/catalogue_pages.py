@@ -144,12 +144,10 @@ PAGES = {
 }
 
 # Photos in a photos folder whose code has no row on the rate sheet (file name = code).
-# They show on the catalogue with "Price on request" (986: extra photo of the catalogue item).
+# They show on the catalogue with "Price on request".
 # Once the item gets a row on the rate sheet (same code, same category), its price and Add button
 # appear on the card by themselves.
 # code: (category, note)
 NEW_ITEMS = {
-    "986": ("scrunchies", ""),
-    "1126": ("scrunchies", ""),
     "1127": ("scrunchies", ""),
 }
