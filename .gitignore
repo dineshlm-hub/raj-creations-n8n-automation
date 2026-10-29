@@ -23,3 +23,9 @@ website/rajcreation.info - upload to public_html.zip
 # Windows / macOS
 Thumbs.db
 .DS_Store
+
+# Android app signing key (keep it in Google Drive / on the PC, never in the repository)
+*.keystore
+*.jks
+signing-key-info.txt
+*Google Play package*.zip

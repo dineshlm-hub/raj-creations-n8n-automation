@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "info.rajcreation.twa",
+      "sha256_cert_fingerprints": [
+        "1E:DD:74:06:E8:0A:AC:A4:83:5A:95:4E:69:0E:BB:EC:67:BF:4F:CB:20:04:6E:B3:79:83:A8:42:47:A2:8F:E0"
+      ]
+    }
+  }
+]

@@ -589,6 +589,10 @@ def main():
     for name in (".htaccess", "robots.txt", "404.html"):
         if (SRC / name).exists():
             shutil.copy(SRC / name, OUT / name)
+    # Android app (Google Play, package info.rajcreation.twa): proves the app and the website belong together,
+    # so the app opens full screen. Holds only public certificate fingerprints, never the signing key.
+    if (SRC / ".well-known").is_dir():
+        shutil.copytree(SRC / ".well-known", OUT / ".well-known", dirs_exist_ok=True)
     (OUT / "chat").mkdir(exist_ok=True)  # /chat/?n=<number> forwards to WhatsApp (button in Mahek's alert template)
     shutil.copy(SRC / "chat" / "index.html", OUT / "chat" / "index.html")
     render_pages(catalogue, fill)
