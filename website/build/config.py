@@ -26,7 +26,7 @@ PHONE_DISPLAY = "+91 91122 96139"
 # "mov" = minimum order value (items total, before GST). The wholesaler minimum is 1 carton instead.
 BUSINESS_TYPES = [
     {"id": "other", "pct": 30, "mov": 5000},
-    {"id": "reseller", "pct": 25, "mov": 5000},
+    {"id": "reseller", "pct": 30, "mov": 5000},
     {"id": "retailer", "pct": 15, "mov": 12000, "open": True},
     {"id": "wholesaler", "pct": 0, "carton": True, "open": True},  # the rate sheet is the wholesale price (29 Oct 2026: the +₹3 is in the rates)
 ]
