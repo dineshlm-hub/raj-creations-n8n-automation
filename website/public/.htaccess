@@ -18,6 +18,7 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 AddType image/webp .webp
+AddType application/manifest+json .webmanifest
 AddType font/woff2 .woff2
 
 # Caching: pages and price data always fresh. Photos, fonts and scripts are linked with ?v=<content hash>,
@@ -36,9 +37,13 @@ AddType font/woff2 .woff2
   <FilesMatch "\.(webp|woff2|js|css)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-  <FilesMatch "\.(html|json)$">
+  <FilesMatch "\.(html|json|webmanifest)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+  # the app's service worker must always be checked for updates
+  <Files "sw.js">
+    Header set Cache-Control "no-cache"
+  </Files>
 </IfModule>
 
 # Never serve working files that end up in the folder by mistake (upload zips contain the secret rate-list link)

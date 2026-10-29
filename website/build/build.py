@@ -127,6 +127,49 @@ def render_logo_pdf():
     return out
 
 
+def render_app_icons():
+    """Icons and manifest for installing the site as an app from Chrome ("Install app" / "Add to Home screen"):
+    the RC monogram on the site's cream background. "maskable" icons keep the mark inside the central safe zone,
+    because Android crops them to a circle or rounded square."""
+    bg = (0xFA, 0xF6, 0xF1)
+    mark = monogram()
+    def icon(size, fill, name, fmt="PNG"):
+        im = Image.new("RGB", (size, size), bg)
+        m = mark.copy()
+        m.thumbnail((round(size * fill), round(size * fill)), Image.LANCZOS)
+        im.paste(m, ((size - m.width) // 2, (size - m.height) // 2), m)
+        out = OUT / "assets" / name
+        im.save(out, fmt)
+        return f"/assets/{name}?v={ver(out)}"
+    icons = [
+        {"src": icon(192, 0.74, "icon-192.png"), "sizes": "192x192", "type": "image/png", "purpose": "any"},
+        {"src": icon(512, 0.74, "icon-512.png"), "sizes": "512x512", "type": "image/png", "purpose": "any"},
+        {"src": icon(512, 0.56, "icon-maskable-512.png"), "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+    ]
+    apple = icon(180, 0.7, "apple-touch-icon.png")
+    manifest = {
+        "id": "/",
+        "name": "Raj Creation – Wholesale Hair Accessories",
+        "short_name": "Raj Creation",
+        "description": "Wholesale hair accessories catalogue and rate list – order on WhatsApp.",
+        "lang": "en",
+        "start_url": "/",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "portrait",
+        "background_color": "#FAF6F1",
+        "theme_color": "#FAF6F1",
+        "icons": icons,
+        "shortcuts": [
+            {"name": c["name"], "short_name": c["name"].split(",")[0], "url": f"/{c['id']}/"} for c in CATEGORIES
+        ],
+    }
+    (OUT / "manifest.webmanifest").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf8")
+    for name in ("sw.js", "offline.html"):  # the service worker must sit at the site root so it covers every page
+        shutil.copy(SRC / name, OUT / name)
+    return {"v_manifest": ver(OUT / "manifest.webmanifest"), "apple_icon": apple}
+
+
 def monogram():
     """The RC monogram cut out of the catalogue logo at full resolution (RGBA, ink on transparent)."""
     import numpy as np
@@ -509,6 +552,7 @@ def main():
     shutil.copytree(SRC / "assets" / "fonts", OUT / "assets" / "fonts", dirs_exist_ok=True)
     fill = prerender(catalogue, i18n_en(), nav)
     fill["css"] = css
+    fill.update(render_app_icons())
     for key, path in (("v_app", "assets/app.js"), ("v_i18n", "assets/i18n.js"), ("v_logo", "assets/logo-mark.webp"),
                       ("v_inter", "assets/fonts/inter-latin.woff2"), ("v_rupee", "assets/fonts/inter-rupee.woff2"),
                       ("v_playfair", "assets/fonts/playfair-latin.woff2"), ("v_orders", "assets/orders.js")):

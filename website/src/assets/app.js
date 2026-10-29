@@ -959,5 +959,10 @@
     renderOrderBar();
   }
 
+  // Installable as an app from Chrome: the service worker (site root) only adds an offline page.
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+  }
+
   init();
 })();

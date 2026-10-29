@@ -438,6 +438,11 @@
     startEdit({ order: res.order, customer: ed.customer, template_ok: ed.templateOk }, { kind: 'warn', text: res.message });
   }
 
+  // Installable as an app from Chrome: the service worker (site root) only adds an offline page.
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+  }
+
   // ---------- start ----------
   if (!P.api || /^\{/.test(P.api)) { app.innerHTML = note('err', 'The order page is not set up yet (no API address).'); return; }
   if (session) showList(); else showLogin();
